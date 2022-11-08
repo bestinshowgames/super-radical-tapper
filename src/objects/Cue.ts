@@ -92,10 +92,13 @@ export default class Cue extends Phaser.GameObjects.Container {
         circle.setFillStyle(
           this.convertHEXToNumber(this.options.highlightColor)
         );
+        break;
       case 'success':
         circle.setFillStyle(this.convertHEXToNumber(this.options.successColor));
+        break;
       case 'failure':
         circle.setFillStyle(this.convertHEXToNumber(this.options.failureColor));
+        break;
       default:
         circle.setFillStyle(this.convertHEXToNumber(this.options.baseColor));
     }
