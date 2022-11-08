@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
-import config from './config';
+import PhaserConfig from './PhaserConfig';
 import { Game } from './scenes';
 
 new Phaser.Game(
-  Object.assign(config, {
+  Object.assign(PhaserConfig, {
     scene: [Game]
   })
 );

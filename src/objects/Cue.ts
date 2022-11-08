@@ -1,27 +1,104 @@
 import Phaser from 'phaser';
 
-export default class Cue extends Phaser.GameObjects.Container {
-  scene: Phaser.Scene;
+export type HEX = `#${string}`;
+
+export interface CueOptions {
   x: number;
   y: number;
   radius: number;
+  baseColor: HEX;
+  highlightColor: HEX;
+  successColor: HEX;
+  failureColor: HEX;
   text?: string;
+}
 
-  constructor(
-    scene: Phaser.Scene,
-    x: number,
-    y: number,
-    radius: number,
-    text?: string
-  ) {
-    super(scene, x, y);
+export default class Cue extends Phaser.GameObjects.Container {
+  scene: Phaser.Scene;
+  options: CueOptions;
+
+  baseCircle: Phaser.GameObjects.Arc;
+  highlightedCircle: Phaser.GameObjects.Arc;
+  succeededCircle: Phaser.GameObjects.Arc;
+  failedCircle: Phaser.GameObjects.Arc;
+
+  constructor(scene: Phaser.Scene, options: CueOptions) {
+    super(scene, options.x, options.y);
     this.scene = scene;
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.text = text;
+    this.options = options;
+    const { x, y } = options;
 
-    const circle = this.scene.add.circle(x, y, radius, 0xff43c2);
-    this.scene.add.existing(circle);
+    this.baseCircle = this.createCircle();
+    this.scene.add.existing(this.baseCircle);
+
+    this.highlightedCircle = this.createCircle('highlight');
+    this.scene.add.existing(this.highlightedCircle);
+
+    this.succeededCircle = this.createCircle('success');
+    this.scene.add.existing(this.succeededCircle);
+
+    this.failedCircle = this.createCircle('failure');
+    this.scene.add.existing(this.failedCircle);
+
+    if (options.text) {
+      const cueText = this.scene.add.text(x, y, options.text, {
+        font: 'Toriko'
+      });
+      Phaser.Display.Align.In.Center(cueText, this.baseCircle);
+    }
+
+    this.rest();
+  }
+
+  convertHEXToNumber(hex: HEX) {
+    return parseInt(hex.replace(/^#/, ''), 16);
+  }
+
+  rest() {
+    this.reset();
+    this.baseCircle.setVisible(true);
+  }
+
+  highlight() {
+    this.reset();
+    this.highlightedCircle.setVisible(true);
+  }
+
+  succeed() {
+    this.reset();
+    this.succeededCircle.setVisible(true);
+  }
+
+  fail() {
+    this.reset();
+    this.failedCircle.setVisible(true);
+  }
+
+  reset() {
+    this.baseCircle.setVisible(false);
+    this.highlightedCircle.setVisible(false);
+    this.succeededCircle.setVisible(false);
+    this.failedCircle.setVisible(false);
+  }
+
+  createCircle(type?: string) {
+    const circle = this.scene.add.circle(
+      this.options.x,
+      this.options.y,
+      this.options.radius
+    );
+    switch (type) {
+      case 'highlight':
+        circle.setFillStyle(
+          this.convertHEXToNumber(this.options.highlightColor)
+        );
+      case 'success':
+        circle.setFillStyle(this.convertHEXToNumber(this.options.successColor));
+      case 'failure':
+        circle.setFillStyle(this.convertHEXToNumber(this.options.failureColor));
+      default:
+        circle.setFillStyle(this.convertHEXToNumber(this.options.baseColor));
+    }
+    return circle;
   }
 }
