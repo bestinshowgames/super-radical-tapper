@@ -6,41 +6,25 @@ const cueConfigs: CueOptions[] = [
     x: 160,
     y: 300,
     radius: 50,
-    text: 'D',
-    baseColor: '#ff43c2',
-    highlightColor: '#F8FF43',
-    failureColor: '#FF4343',
-    successColor: '#43FF63'
+    text: 'D'
   },
   {
     x: 320,
     y: 300,
     radius: 50,
-    text: 'F',
-    baseColor: '#ff43c2',
-    highlightColor: '#F8FF43',
-    failureColor: '#FF4343',
-    successColor: '#43FF63'
+    text: 'F'
   },
   {
     x: 480,
     y: 300,
     radius: 50,
-    text: 'J',
-    baseColor: '#ff43c2',
-    highlightColor: '#F8FF43',
-    failureColor: '#FF4343',
-    successColor: '#43FF63'
+    text: 'J'
   },
   {
     x: 640,
     y: 300,
     radius: 50,
-    text: 'J',
-    baseColor: '#ff43c2',
-    highlightColor: '#F8FF43',
-    failureColor: '#FF4343',
-    successColor: '#43FF63'
+    text: 'J'
   }
 ];
 

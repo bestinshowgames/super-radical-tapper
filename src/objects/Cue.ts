@@ -6,10 +6,10 @@ export interface CueOptions {
   x: number;
   y: number;
   radius: number;
-  baseColor: HEX;
-  highlightColor: HEX;
-  successColor: HEX;
-  failureColor: HEX;
+  baseColor?: HEX;
+  highlightColor?: HEX;
+  successColor?: HEX;
+  failureColor?: HEX;
   text?: string;
 }
 
@@ -18,9 +18,13 @@ export default class Cue extends Phaser.GameObjects.Container {
   options: CueOptions;
 
   baseCircle: Phaser.GameObjects.Arc;
+  defaultBaseColor: HEX = '#FF43C2';
   highlightedCircle: Phaser.GameObjects.Arc;
+  defaultHighlightedColor: HEX = '#F8FF43';
   succeededCircle: Phaser.GameObjects.Arc;
+  defaultSuccessColor: HEX = '#43FF63';
   failedCircle: Phaser.GameObjects.Arc;
+  defaultFailureColor: HEX = '#FF4343';
 
   constructor(scene: Phaser.Scene, options: CueOptions) {
     super(scene, options.x, options.y);
@@ -90,17 +94,31 @@ export default class Cue extends Phaser.GameObjects.Container {
     switch (type) {
       case 'highlight':
         circle.setFillStyle(
-          this.convertHEXToNumber(this.options.highlightColor)
+          this.convertHEXToNumber(
+            this.options.highlightColor ?? this.defaultHighlightedColor
+          )
         );
         break;
       case 'success':
-        circle.setFillStyle(this.convertHEXToNumber(this.options.successColor));
+        circle.setFillStyle(
+          this.convertHEXToNumber(
+            this.options.successColor ?? this.defaultSuccessColor
+          )
+        );
         break;
       case 'failure':
-        circle.setFillStyle(this.convertHEXToNumber(this.options.failureColor));
+        circle.setFillStyle(
+          this.convertHEXToNumber(
+            this.options.failureColor ?? this.defaultFailureColor
+          )
+        );
         break;
       default:
-        circle.setFillStyle(this.convertHEXToNumber(this.options.baseColor));
+        circle.setFillStyle(
+          this.convertHEXToNumber(
+            this.options.baseColor ?? this.defaultBaseColor
+          )
+        );
     }
     return circle;
   }
