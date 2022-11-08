@@ -1,3 +1,3 @@
-import Cue from "./Cue";
+import Cue from './Cue';
 
 export { Cue };
