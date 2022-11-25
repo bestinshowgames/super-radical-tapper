@@ -1,43 +1,21 @@
 import Phaser from 'phaser';
-import { Cue, CueOptions } from '../objects';
-
-const cueConfigs: CueOptions[] = [
-  {
-    x: 160,
-    y: 300,
-    radius: 50,
-    text: 'D'
-  },
-  {
-    x: 320,
-    y: 300,
-    radius: 50,
-    text: 'F'
-  },
-  {
-    x: 480,
-    y: 300,
-    radius: 50,
-    text: 'J'
-  },
-  {
-    x: 640,
-    y: 300,
-    radius: 50,
-    text: 'J'
-  }
-];
+import GameManager, { CueCreationConfig } from '../GameManager';
+import { Cue } from '../objects';
 
 const cues: Cue[] = [];
 
 export default class Game extends Phaser.Scene {
+  gm: GameManager;
   constructor() {
     super('Game');
+    this.gm = new GameManager();
   }
 
   timeSinceLastSequenceFlip: number = 0;
+  highlightedCue: Cue | null = null;
 
   create() {
+    this.input.keyboard.createCursorKeys();
     this.add
       .text(400, 50, 'Super Radical Tapper', {
         fontFamily: 'Toriko',
@@ -45,17 +23,25 @@ export default class Game extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    cueConfigs.forEach((cueConfig) => cues.push(new Cue(this, cueConfig)));
+    this.input.keyboard.on('keydown', this.processInput, this);
 
-    cues[Math.floor(Math.random() * cues.length)].highlight();
+    this.gm.cueConfigurations.forEach((cueConfig: CueCreationConfig) =>
+      cues.push(new Cue(this, cueConfig))
+    );
   }
 
+  // TODO: LET UPDATE JUST DECIDE WHAT 'PHASE' WE'RE IN.
   update(_time: number, delta: number) {
     this.timeSinceLastSequenceFlip += delta;
     if (this.timeSinceLastSequenceFlip > 500) {
       cues.forEach((cue) => cue.rest());
-      cues[Math.floor(Math.random() * cues.length)].highlight();
+      this.highlightedCue = cues[Math.floor(Math.random() * cues.length)];
+      this.highlightedCue.highlight();
       this.timeSinceLastSequenceFlip = 0;
     }
+  }
+  processInput(event: any) {
+    const key: number = event.keyCode;
+    console.log(key);
   }
 }
