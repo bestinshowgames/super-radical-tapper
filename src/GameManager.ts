@@ -107,4 +107,11 @@ export default class GameManager {
   selectCue(): string {
     return cueConfigs[Math.floor(Math.random() * cueConfigs.length)].id;
   }
+
+  cueForKey(keyCode: number): string | undefined {
+    const cueForKey = this.cueConfigurations.find(
+      (config) => config.key == keyCode
+    );
+    return cueForKey?.id;
+  }
 }

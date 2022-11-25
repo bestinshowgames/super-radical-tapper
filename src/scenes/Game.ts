@@ -57,7 +57,14 @@ export default class Game extends Phaser.Scene {
   processInput(event: any) {
     const key: number = event.keyCode;
     if (this.gm.currentGamePhase === GamePhase.RESPONSE_COLLECTION) {
-      console.log(key);
+      const cueId: string | undefined = this.gm.cueForKey(key);
+      if (cueId && cueId == this.highlightedCue?.id) {
+        this.highlightedCue?.succeed();
+      } else {
+        this.highlightedCue?.fail();
+      }
+    } else {
+      // TODO: Add handling for non-gameplay keys, e.g. pause
     }
   }
 }
