@@ -1,6 +1,6 @@
-import Cue, { CueOptions, HEX } from './Cue';
+import Cue, { CueOptions, CueStatus, HEX } from './Cue';
 import Phaser from 'phaser';
 
 const KeyCodes = Phaser.Input.Keyboard.KeyCodes;
-export { Cue, KeyCodes };
+export { Cue, CueStatus, KeyCodes };
 export type { HEX, CueOptions };

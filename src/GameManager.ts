@@ -67,11 +67,11 @@ export default class GameManager {
       nextPhase: GamePhase.DISPLAY_RESULTS
     },
     [GamePhase.DISPLAY_RESULTS]: {
-      duration: 1000,
+      duration: 500,
       nextPhase: GamePhase.WAIT
     },
     [GamePhase.WAIT]: {
-      duration: 250,
+      duration: 750,
       nextPhase: GamePhase.PRESENTATION
     }
   };

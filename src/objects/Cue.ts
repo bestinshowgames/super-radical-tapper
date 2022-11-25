@@ -14,10 +14,18 @@ export interface CueOptions {
   text?: string;
 }
 
+export enum CueStatus {
+  REST,
+  HIGHLIGHT,
+  SUCCEED,
+  FAIL
+}
+
 export default class Cue extends Phaser.GameObjects.Container {
   scene: Phaser.Scene;
   options: CueOptions;
   id: string;
+  private m_status: CueStatus = CueStatus.REST;
 
   baseCircle: Phaser.GameObjects.Arc;
   defaultBaseColor: HEX = '#FF43C2';
@@ -49,8 +57,9 @@ export default class Cue extends Phaser.GameObjects.Container {
 
     if (options.text) {
       const cueText = this.scene.add.text(x, y, options.text, {
-        font: 'Toriko'
+        font: '28px Toriko'
       });
+      cueText.setStroke('black', 2);
       Phaser.Display.Align.In.Center(cueText, this.baseCircle);
     }
 
@@ -61,27 +70,39 @@ export default class Cue extends Phaser.GameObjects.Container {
     return parseInt(hex.replace(/^#/, ''), 16);
   }
 
+  get status(): CueStatus {
+    return this.m_status;
+  }
+
+  private set status(newStatus: CueStatus) {
+    this.m_status = newStatus;
+  }
+
   rest() {
     this.reset();
     this.baseCircle.setVisible(true);
+    this.status = CueStatus.REST;
   }
 
   highlight() {
     this.reset();
     this.highlightedCircle.setVisible(true);
+    this.status = CueStatus.HIGHLIGHT;
   }
 
   succeed() {
     this.reset();
     this.succeededCircle.setVisible(true);
+    this.status = CueStatus.SUCCEED;
   }
 
   fail() {
     this.reset();
     this.failedCircle.setVisible(true);
+    this.status = CueStatus.FAIL;
   }
 
-  reset() {
+  private reset() {
     this.baseCircle.setVisible(false);
     this.highlightedCircle.setVisible(false);
     this.succeededCircle.setVisible(false);
