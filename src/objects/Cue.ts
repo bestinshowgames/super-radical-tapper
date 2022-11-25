@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 export type HEX = `#${string}`;
 
 export interface CueOptions {
+  id: string;
   x: number;
   y: number;
   radius: number;
@@ -16,6 +17,7 @@ export interface CueOptions {
 export default class Cue extends Phaser.GameObjects.Container {
   scene: Phaser.Scene;
   options: CueOptions;
+  id: string;
 
   baseCircle: Phaser.GameObjects.Arc;
   defaultBaseColor: HEX = '#FF43C2';
@@ -30,6 +32,7 @@ export default class Cue extends Phaser.GameObjects.Container {
     super(scene, options.x, options.y);
     this.scene = scene;
     this.options = options;
+    this.id = options.id;
     const { x, y } = options;
 
     this.baseCircle = this.createCircle();

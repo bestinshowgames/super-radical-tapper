@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
-import GameManager, { CueCreationConfig } from '../GameManager';
+import GameManager, { CueCreationConfig, GamePhase } from '../GameManager';
 import { Cue } from '../objects';
 
-const cues: Cue[] = [];
+const cues: { [key: string]: Cue } = {};
 
 export default class Game extends Phaser.Scene {
   gm: GameManager;
@@ -11,7 +11,7 @@ export default class Game extends Phaser.Scene {
     this.gm = new GameManager();
   }
 
-  timeSinceLastSequenceFlip: number = 0;
+  timeInPhase = 0;
   highlightedCue: Cue | null = null;
 
   create() {
@@ -25,23 +25,39 @@ export default class Game extends Phaser.Scene {
 
     this.input.keyboard.on('keydown', this.processInput, this);
 
-    this.gm.cueConfigurations.forEach((cueConfig: CueCreationConfig) =>
-      cues.push(new Cue(this, cueConfig))
+    this.gm.cueConfigurations.forEach(
+      (cueConfig: CueCreationConfig) =>
+        (cues[cueConfig.id] = new Cue(this, cueConfig))
     );
   }
 
   // TODO: LET UPDATE JUST DECIDE WHAT 'PHASE' WE'RE IN.
   update(_time: number, delta: number) {
-    this.timeSinceLastSequenceFlip += delta;
-    if (this.timeSinceLastSequenceFlip > 500) {
-      cues.forEach((cue) => cue.rest());
-      this.highlightedCue = cues[Math.floor(Math.random() * cues.length)];
-      this.highlightedCue.highlight();
-      this.timeSinceLastSequenceFlip = 0;
+    this.timeInPhase += delta;
+    const phaseDuration = this.gm.phaseDuration(this.gm.currentGamePhase);
+    if (this.timeInPhase >= phaseDuration) {
+      const newPhase = this.gm.nextPhase();
+      console.log('FLIPPING PHASES TO ', newPhase);
+      this.gm.currentGamePhase = newPhase;
+      if (newPhase === GamePhase.PRESENTATION) {
+        this.resetCues();
+        this.highlightedCue = cues[this.gm.selectCue()];
+        this.highlightedCue.highlight();
+      } else if (newPhase === GamePhase.WAIT) {
+        this.resetCues();
+      }
+      this.timeInPhase = 0;
     }
   }
+
+  resetCues() {
+    Object.keys(cues).forEach((cueId) => cues[cueId].rest());
+  }
+
   processInput(event: any) {
     const key: number = event.keyCode;
-    console.log(key);
+    if (this.gm.currentGamePhase === GamePhase.RESPONSE_COLLECTION) {
+      console.log(key);
+    }
   }
 }
