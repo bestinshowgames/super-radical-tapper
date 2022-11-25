@@ -3,29 +3,44 @@ import Phaser from 'phaser';
 export type HEX = `#${string}`;
 
 export interface CueOptions {
+  id: string;
   x: number;
   y: number;
   radius: number;
-  baseColor: HEX;
-  highlightColor: HEX;
-  successColor: HEX;
-  failureColor: HEX;
+  baseColor?: HEX;
+  highlightColor?: HEX;
+  successColor?: HEX;
+  failureColor?: HEX;
   text?: string;
+}
+
+export enum CueStatus {
+  REST,
+  HIGHLIGHT,
+  SUCCEED,
+  FAIL
 }
 
 export default class Cue extends Phaser.GameObjects.Container {
   scene: Phaser.Scene;
   options: CueOptions;
+  id: string;
+  private m_status: CueStatus = CueStatus.REST;
 
   baseCircle: Phaser.GameObjects.Arc;
+  defaultBaseColor: HEX = '#FF43C2';
   highlightedCircle: Phaser.GameObjects.Arc;
+  defaultHighlightedColor: HEX = '#F8FF43';
   succeededCircle: Phaser.GameObjects.Arc;
+  defaultSuccessColor: HEX = '#43FF63';
   failedCircle: Phaser.GameObjects.Arc;
+  defaultFailureColor: HEX = '#FF4343';
 
   constructor(scene: Phaser.Scene, options: CueOptions) {
     super(scene, options.x, options.y);
     this.scene = scene;
     this.options = options;
+    this.id = options.id;
     const { x, y } = options;
 
     this.baseCircle = this.createCircle();
@@ -42,8 +57,9 @@ export default class Cue extends Phaser.GameObjects.Container {
 
     if (options.text) {
       const cueText = this.scene.add.text(x, y, options.text, {
-        font: 'Toriko'
+        font: '28px Toriko'
       });
+      cueText.setStroke('black', 2);
       Phaser.Display.Align.In.Center(cueText, this.baseCircle);
     }
 
@@ -54,27 +70,39 @@ export default class Cue extends Phaser.GameObjects.Container {
     return parseInt(hex.replace(/^#/, ''), 16);
   }
 
+  get status(): CueStatus {
+    return this.m_status;
+  }
+
+  private set status(newStatus: CueStatus) {
+    this.m_status = newStatus;
+  }
+
   rest() {
     this.reset();
     this.baseCircle.setVisible(true);
+    this.status = CueStatus.REST;
   }
 
   highlight() {
     this.reset();
     this.highlightedCircle.setVisible(true);
+    this.status = CueStatus.HIGHLIGHT;
   }
 
   succeed() {
     this.reset();
     this.succeededCircle.setVisible(true);
+    this.status = CueStatus.SUCCEED;
   }
 
   fail() {
     this.reset();
     this.failedCircle.setVisible(true);
+    this.status = CueStatus.FAIL;
   }
 
-  reset() {
+  private reset() {
     this.baseCircle.setVisible(false);
     this.highlightedCircle.setVisible(false);
     this.succeededCircle.setVisible(false);
@@ -90,17 +118,31 @@ export default class Cue extends Phaser.GameObjects.Container {
     switch (type) {
       case 'highlight':
         circle.setFillStyle(
-          this.convertHEXToNumber(this.options.highlightColor)
+          this.convertHEXToNumber(
+            this.options.highlightColor ?? this.defaultHighlightedColor
+          )
         );
         break;
       case 'success':
-        circle.setFillStyle(this.convertHEXToNumber(this.options.successColor));
+        circle.setFillStyle(
+          this.convertHEXToNumber(
+            this.options.successColor ?? this.defaultSuccessColor
+          )
+        );
         break;
       case 'failure':
-        circle.setFillStyle(this.convertHEXToNumber(this.options.failureColor));
+        circle.setFillStyle(
+          this.convertHEXToNumber(
+            this.options.failureColor ?? this.defaultFailureColor
+          )
+        );
         break;
       default:
-        circle.setFillStyle(this.convertHEXToNumber(this.options.baseColor));
+        circle.setFillStyle(
+          this.convertHEXToNumber(
+            this.options.baseColor ?? this.defaultBaseColor
+          )
+        );
     }
     return circle;
   }
