@@ -1,18 +1,60 @@
 import Phaser from 'phaser';
 import GameManager, { CueCreationConfig, GamePhase } from '../GameManager';
+import type { GamePhaseController } from '../GamePhaseController';
 import { Cue, CueStatus } from '../objects';
 
-const cues: { [key: string]: Cue } = {};
+interface GameContainer {
+  readonly failText?: Phaser.GameObjects.Text;
+  readonly successText?: Phaser.GameObjects.Text;
+  highlightedCue?: Cue;
+  cues: { [key: string]: Cue };
+  resetCues(): void;
+  resetResultTexts(): void;
+}
 
-export default class Game extends Phaser.Scene {
+class GameController implements GamePhaseController {
+  readonly container: GameContainer;
+  constructor(container: GameContainer) {
+    this.container = container;
+  }
+
+  displayResults(): void {
+    const responseStatus = this.container.highlightedCue?.status;
+    const didSucceed = responseStatus === CueStatus.SUCCEED;
+    if (!didSucceed) {
+      this.container.failText?.setVisible(true);
+      this.container.highlightedCue?.fail();
+    } else {
+      this.container.successText?.setVisible(true);
+    }
+  }
+
+  presentCue(cueKey: string): integer {
+    this.container.resetCues();
+    this.container.highlightedCue = this.container.cues[cueKey];
+    this.container.highlightedCue.highlight();
+    return 0;
+  }
+
+  waitForResponse(): integer {
+    this.container.resetResultTexts();
+    this.container.resetCues();
+    return 0;
+  }
+}
+
+export default class Game extends Phaser.Scene implements GameContainer {
   failText: Phaser.GameObjects.Text | undefined = undefined;
   successText: Phaser.GameObjects.Text | undefined = undefined;
   gm: GameManager;
+  controller: GameController;
   timeInPhase = 0;
-  highlightedCue: Cue | null = null;
+  cues: { [key: string]: Cue } = {};
+  highlightedCue: Cue | undefined = undefined;
   constructor() {
     super('Game');
     this.gm = new GameManager();
+    this.controller = new GameController(this);
   }
 
   create() {
@@ -35,41 +77,21 @@ export default class Game extends Phaser.Scene {
 
     this.gm.cueConfigurations.forEach(
       (cueConfig: CueCreationConfig) =>
-        (cues[cueConfig.id] = new Cue(this, cueConfig))
+        (this.cues[cueConfig.id] = new Cue(this, cueConfig))
     );
   }
 
+  // TODO: MOVE THIS LOGIVE TO A METHOD IN GAMEMANAGER, PASS IN THE CONTROLLER, AND SEE WHAT BREAKS
   update(_time: number, delta: number) {
     this.timeInPhase += delta;
-    const phaseDuration = this.gm.phaseDuration(this.gm.currentGamePhase);
-    if (this.gm.currentGamePhase === GamePhase.DISPLAY_RESULTS) {
-      const responseStatus = this.highlightedCue?.status;
-      const didSucceed = responseStatus === CueStatus.SUCCEED;
-      if (!didSucceed) {
-        this.failText?.setVisible(true);
-        this.highlightedCue?.fail();
-      } else {
-        this.successText?.setVisible(true);
-      }
-    }
-
-    if (this.timeInPhase >= phaseDuration) {
-      const newPhase = this.gm.nextPhase();
-      this.gm.currentGamePhase = newPhase;
-      if (newPhase === GamePhase.PRESENTATION) {
-        this.resetCues();
-        this.highlightedCue = cues[this.gm.selectCue()];
-        this.highlightedCue.highlight();
-      } else if (newPhase === GamePhase.WAIT) {
-        this.resetResultTexts();
-        this.resetCues();
-      }
-      this.timeInPhase = 0;
-    }
+    this.timeInPhase = this.gm.handlePhaseUpdate(
+      this.timeInPhase,
+      this.controller
+    );
   }
 
   resetCues() {
-    Object.keys(cues).forEach((cueId) => cues[cueId].rest());
+    Object.keys(this.cues).forEach((cueId) => this.cues[cueId].rest());
   }
 
   resetResultTexts() {

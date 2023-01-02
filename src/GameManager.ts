@@ -1,3 +1,4 @@
+import { GamePhaseController } from './GamePhaseController';
 import { CueOptions, KeyCodes } from './objects';
 
 export interface CueCreationConfig extends CueOptions {
@@ -113,5 +114,29 @@ export default class GameManager {
       (config) => config.key == keyCode
     );
     return cueForKey?.id;
+  }
+
+  handlePhaseUpdate(
+    timeInPhase: integer,
+    phaseController: GamePhaseController
+  ): integer {
+    const phaseDuration = this.phaseDuration(this.currentGamePhase);
+    let resultTime = timeInPhase;
+    if (this.currentGamePhase === GamePhase.DISPLAY_RESULTS) {
+      phaseController.displayResults();
+    }
+
+    if (timeInPhase >= phaseDuration) {
+      const newPhase = this.nextPhase();
+      this.currentGamePhase = newPhase;
+      if (newPhase === GamePhase.PRESENTATION) {
+        phaseController.presentCue(this.selectCue());
+      } else if (newPhase === GamePhase.WAIT) {
+        phaseController.waitForResponse();
+      }
+      resultTime = 0;
+    }
+
+    return resultTime;
   }
 }
