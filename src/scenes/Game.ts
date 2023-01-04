@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
-import GameManager, { CueCreationConfig, GamePhase } from '../GameManager';
-import type { GamePhaseController } from '../GamePhaseController';
+import { GameManager, CueCreationConfig, GamePhase } from '../controllers';
+import type { GamePhaseController } from '../controllers';
 import { Cue, CueStatus } from '../objects';
 
 interface GameContainer {
@@ -51,6 +51,7 @@ export default class Game extends Phaser.Scene implements GameContainer {
   timeInPhase = 0;
   cues: { [key: string]: Cue } = {};
   highlightedCue: Cue | undefined = undefined;
+
   constructor() {
     super('Game');
     this.gm = new GameManager();
@@ -81,7 +82,6 @@ export default class Game extends Phaser.Scene implements GameContainer {
     );
   }
 
-  // TODO: MOVE THIS LOGIVE TO A METHOD IN GAMEMANAGER, PASS IN THE CONTROLLER, AND SEE WHAT BREAKS
   update(_time: number, delta: number) {
     this.timeInPhase += delta;
     this.timeInPhase = this.gm.handlePhaseUpdate(

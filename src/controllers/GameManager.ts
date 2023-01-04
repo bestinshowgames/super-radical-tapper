@@ -1,7 +1,8 @@
-import { GamePhaseController } from './GamePhaseController';
-import { CueOptions, KeyCodes } from './objects';
+import GamePhaseController from './GamePhaseController.interface';
+import { Input } from 'phaser';
+import { CueConfiguration } from '../objects';
 
-export interface CueCreationConfig extends CueOptions {
+export interface CueCreationConfig extends CueConfiguration {
   key: number;
 }
 
@@ -12,7 +13,7 @@ const cueConfigs: CueCreationConfig[] = [
     y: 300,
     radius: 50,
     text: 'D',
-    key: KeyCodes.D
+    key: Input.Keyboard.KeyCodes.D,
   },
   {
     id: 'L_CUE',
@@ -20,7 +21,7 @@ const cueConfigs: CueCreationConfig[] = [
     y: 300,
     radius: 50,
     text: 'F',
-    key: KeyCodes.F
+    key: Input.Keyboard.KeyCodes.F,
   },
   {
     id: 'R_CUE',
@@ -28,7 +29,7 @@ const cueConfigs: CueCreationConfig[] = [
     y: 300,
     radius: 50,
     text: 'J',
-    key: KeyCodes.J
+    key: Input.Keyboard.KeyCodes.J,
   },
   {
     id: 'RR_CUE',
@@ -36,8 +37,8 @@ const cueConfigs: CueCreationConfig[] = [
     y: 300,
     radius: 50,
     text: 'K',
-    key: KeyCodes.K
-  }
+    key: Input.Keyboard.KeyCodes.K,
+  },
 ];
 
 export enum GamePhase {
@@ -45,44 +46,37 @@ export enum GamePhase {
   PRESENTATION,
   RESPONSE_COLLECTION,
   DISPLAY_RESULTS,
-  WAIT
-}
-
-enum PresentationPhase {
-  PRESENT_UNSTRUCTURED,
-  PRESETN_STRUCTURED
+  WAIT,
 }
 
 export default class GameManager {
   private phaseConfiguration = {
     [GamePhase.START]: {
       duration: 3000,
-      nextPhase: GamePhase.PRESENTATION
+      nextPhase: GamePhase.PRESENTATION,
     },
     [GamePhase.PRESENTATION]: {
       duration: 0,
-      nextPhase: GamePhase.RESPONSE_COLLECTION
+      nextPhase: GamePhase.RESPONSE_COLLECTION,
     },
     [GamePhase.RESPONSE_COLLECTION]: {
       duration: 500,
-      nextPhase: GamePhase.DISPLAY_RESULTS
+      nextPhase: GamePhase.DISPLAY_RESULTS,
     },
     [GamePhase.DISPLAY_RESULTS]: {
       duration: 500,
-      nextPhase: GamePhase.WAIT
+      nextPhase: GamePhase.WAIT,
     },
     [GamePhase.WAIT]: {
       duration: 750,
-      nextPhase: GamePhase.PRESENTATION
-    }
+      nextPhase: GamePhase.PRESENTATION,
+    },
   };
 
   private m_currentGamePhase: GamePhase;
-  private m_currentPresentationPhase: PresentationPhase;
 
   constructor() {
     this.m_currentGamePhase = GamePhase.START;
-    this.m_currentPresentationPhase = PresentationPhase.PRESENT_UNSTRUCTURED;
   }
 
   get cueConfigurations(): CueCreationConfig[] {

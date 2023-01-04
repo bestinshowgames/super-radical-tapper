@@ -4,6 +4,6 @@ import { Game } from './scenes';
 
 new Phaser.Game(
   Object.assign(PhaserConfig, {
-    scene: [Game]
+    scene: [Game],
   })
 );
