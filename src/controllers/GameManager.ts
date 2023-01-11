@@ -8,7 +8,7 @@ export interface CueCreationConfig extends CueConfiguration {
 
 const cueConfigs: CueCreationConfig[] = [
   {
-    id: 'LL_CUE',
+    id: 'LL',
     x: 160,
     y: 300,
     radius: 50,
@@ -16,7 +16,7 @@ const cueConfigs: CueCreationConfig[] = [
     key: Input.Keyboard.KeyCodes.D,
   },
   {
-    id: 'L_CUE',
+    id: 'L',
     x: 320,
     y: 300,
     radius: 50,
@@ -24,7 +24,7 @@ const cueConfigs: CueCreationConfig[] = [
     key: Input.Keyboard.KeyCodes.F,
   },
   {
-    id: 'R_CUE',
+    id: 'R',
     x: 480,
     y: 300,
     radius: 50,
@@ -32,7 +32,7 @@ const cueConfigs: CueCreationConfig[] = [
     key: Input.Keyboard.KeyCodes.J,
   },
   {
-    id: 'RR_CUE',
+    id: 'RR',
     x: 640,
     y: 300,
     radius: 50,
@@ -68,7 +68,7 @@ export default class GameManager {
       nextPhase: GamePhase.WAIT,
     },
     [GamePhase.WAIT]: {
-      duration: 750,
+      duration: 250,
       nextPhase: GamePhase.PRESENTATION,
     },
   };
@@ -77,18 +77,18 @@ export default class GameManager {
 
   // TODO: make these magic numbers less magic
   private m_structuredSequence: string[] = [
-    'LL_CUE',
-    'L_CUE',
-    'LL_CUE',
-    'R_CUE',
-    'RR_CUE',
-    'L_CUE',
-    'R_CUE',
-    'LL_CUE',
-    'RR_CUE',
-    'R_CUE',
-    'L_CUE',
-    'RR_CUE',
+    'LL',
+    'L',
+    'LL',
+    'R',
+    'RR',
+    'L',
+    'R',
+    'LL',
+    'RR',
+    'R',
+    'L',
+    'RR',
   ];
   private m_sequnceLength = 12;
   private m_sequenceIterations = 8;
