@@ -75,8 +75,34 @@ export default class GameManager {
 
   private m_currentGamePhase: GamePhase;
 
+  // TODO: make these magic numbers less magic
+  private m_structuredSequence: string[] = [
+    'LL_CUE',
+    'L_CUE',
+    'LL_CUE',
+    'R_CUE',
+    'RR_CUE',
+    'L_CUE',
+    'R_CUE',
+    'LL_CUE',
+    'RR_CUE',
+    'R_CUE',
+    'L_CUE',
+    'RR_CUE',
+  ];
+  private m_sequnceLength = 12;
+  private m_sequenceIterations = 8;
+  private m_phaseLength = this.m_sequnceLength * this.m_sequenceIterations;
+
+  private m_structuredPhase: string[];
+
+  private m_cueSelector: Generator<string, string, unknown>;
+
   constructor() {
     this.m_currentGamePhase = GamePhase.START;
+    this.m_structuredPhase = this.buildStructuredPhase();
+    this.m_cueSelector = this.cueGenerator();
+    console.log(this.m_structuredPhase);
   }
 
   get cueConfigurations(): CueCreationConfig[] {
@@ -99,8 +125,38 @@ export default class GameManager {
     return this.phaseConfiguration[gamePhase].duration;
   }
 
-  selectCue(): string {
+  buildStructuredPhase(): string[] {
+    let phase: string[] = [];
+    // this.m_structuredSequence = this.buildSequence();
+    [...Array(this.m_sequenceIterations)].forEach(() => {
+      phase = phase.concat([...this.m_structuredSequence]);
+    });
+    return phase;
+  }
+
+  buildSequence(): string[] {
+    let sequence: string[] = [];
+    [...Array(this.m_sequnceLength)].forEach(() => {
+      sequence.push(this.randomCueId());
+    });
+    return sequence;
+  }
+
+  randomCueId(): string {
     return cueConfigs[Math.floor(Math.random() * cueConfigs.length)].id;
+  }
+
+  *cueGenerator(): Generator<string, string, unknown> {
+    while (true) {
+      for (const id of this.m_structuredPhase) {
+        yield id;
+      }
+      let i = 1;
+      while (i < this.m_phaseLength) {
+        yield cueConfigs[Math.floor(Math.random() * cueConfigs.length)].id;
+        i++;
+      }
+    }
   }
 
   cueForKey(keyCode: number): string | undefined {
@@ -124,7 +180,7 @@ export default class GameManager {
       const newPhase = this.nextPhase();
       this.currentGamePhase = newPhase;
       if (newPhase === GamePhase.PRESENTATION) {
-        phaseController.presentCue(this.selectCue());
+        phaseController.presentCue(this.m_cueSelector.next().value);
       } else if (newPhase === GamePhase.WAIT) {
         phaseController.waitForResponse();
       }
