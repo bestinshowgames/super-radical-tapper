@@ -1,29 +1,16 @@
 import Phaser from 'phaser';
-
-export type HEX = `#${string}`;
-
-export interface CueOptions {
-  id: string;
-  x: number;
-  y: number;
-  radius: number;
-  baseColor?: HEX;
-  highlightColor?: HEX;
-  successColor?: HEX;
-  failureColor?: HEX;
-  text?: string;
-}
+import CueConfiguration, { HEX } from './CueConfiguration.interface';
 
 export enum CueStatus {
   REST,
   HIGHLIGHT,
   SUCCEED,
-  FAIL
+  FAIL,
 }
 
 export default class Cue extends Phaser.GameObjects.Container {
   scene: Phaser.Scene;
-  options: CueOptions;
+  options: CueConfiguration;
   id: string;
   private m_status: CueStatus = CueStatus.REST;
 
@@ -36,7 +23,7 @@ export default class Cue extends Phaser.GameObjects.Container {
   failedCircle: Phaser.GameObjects.Arc;
   defaultFailureColor: HEX = '#FF4343';
 
-  constructor(scene: Phaser.Scene, options: CueOptions) {
+  constructor(scene: Phaser.Scene, options: CueConfiguration) {
     super(scene, options.x, options.y);
     this.scene = scene;
     this.options = options;
@@ -57,7 +44,7 @@ export default class Cue extends Phaser.GameObjects.Container {
 
     if (options.text) {
       const cueText = this.scene.add.text(x, y, options.text, {
-        font: '28px Toriko'
+        font: '28px Toriko',
       });
       cueText.setStroke('black', 2);
       Phaser.Display.Align.In.Center(cueText, this.baseCircle);

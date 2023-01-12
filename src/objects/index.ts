@@ -1,6 +1,5 @@
-import Cue, { CueOptions, CueStatus, HEX } from './Cue';
-import Phaser from 'phaser';
+import Cue, { CueStatus } from './Cue';
+import CueConfiguration, { HEX } from './CueConfiguration.interface';
 
-const KeyCodes = Phaser.Input.Keyboard.KeyCodes;
-export { Cue, CueStatus, KeyCodes };
-export type { HEX, CueOptions };
+export { Cue, CueStatus };
+export type { CueConfiguration, HEX };
