@@ -92,17 +92,18 @@ export default class GameManager {
   ];
   private m_sequnceLength = 12;
   private m_sequenceIterations = 8;
-  private m_phaseLength = this.m_sequnceLength * this.m_sequenceIterations;
+  private m_presentationPhaseLength =
+    this.m_sequnceLength * this.m_sequenceIterations;
 
-  private m_structuredPhase: string[];
+  private m_structuredPresentationPhase: string[];
 
   private m_cueSelector: Generator<string, string, unknown>;
 
   constructor() {
     this.m_currentGamePhase = GamePhase.START;
-    this.m_structuredPhase = this.buildStructuredPhase();
+    this.m_structuredPresentationPhase =
+      this.buildStructuredPresentationPhase();
     this.m_cueSelector = this.cueGenerator();
-    console.log(this.m_structuredPhase);
   }
 
   get cueConfigurations(): CueCreationConfig[] {
@@ -117,6 +118,22 @@ export default class GameManager {
     this.m_currentGamePhase = newGamePhase;
   }
 
+  get structuredSequence(): string[] {
+    return this.m_structuredSequence;
+  }
+
+  get sequenceIterations(): number {
+    return this.m_sequenceIterations;
+  }
+
+  get presentationPhaseLength(): number {
+    return this.m_presentationPhaseLength;
+  }
+
+  get cueSelector(): Generator<string, string, undefined> {
+    return this.m_cueSelector;
+  }
+
   nextPhase(): GamePhase {
     return this.phaseConfiguration[this.currentGamePhase].nextPhase;
   }
@@ -125,21 +142,12 @@ export default class GameManager {
     return this.phaseConfiguration[gamePhase].duration;
   }
 
-  buildStructuredPhase(): string[] {
+  buildStructuredPresentationPhase(): string[] {
     let phase: string[] = [];
-    // this.m_structuredSequence = this.buildSequence();
     [...Array(this.m_sequenceIterations)].forEach(() => {
       phase = phase.concat([...this.m_structuredSequence]);
     });
     return phase;
-  }
-
-  buildSequence(): string[] {
-    let sequence: string[] = [];
-    [...Array(this.m_sequnceLength)].forEach(() => {
-      sequence.push(this.randomCueId());
-    });
-    return sequence;
   }
 
   randomCueId(): string {
@@ -148,13 +156,16 @@ export default class GameManager {
 
   *cueGenerator(): Generator<string, string, unknown> {
     while (true) {
-      for (const id of this.m_structuredPhase) {
+      let callCount = 1;
+      for (const id of this.m_structuredPresentationPhase) {
         yield id;
+        callCount++;
       }
       let i = 1;
-      while (i < this.m_phaseLength) {
-        yield cueConfigs[Math.floor(Math.random() * cueConfigs.length)].id;
+      while (i <= this.m_presentationPhaseLength) {
+        yield this.randomCueId();
         i++;
+        callCount++;
       }
     }
   }

@@ -82,4 +82,36 @@ describe('Core Gameplay Loop', () => {
       });
     });
   });
+
+  describe('Sequencing', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('Cue selection iterates back and forth between a structured, repeating sequence and a random sequence', () => {
+      const gm = new GameManager();
+      jest.spyOn(gm, 'randomCueId').mockReturnValue('FOO');
+      const sequence = gm.structuredSequence;
+      const count = gm.sequenceIterations;
+      const presentationPhaseLength = gm.presentationPhaseLength;
+
+      // Test that that structured sequence repeats
+      [...Array(count)].forEach(() => {
+        sequence.forEach((expected) => {
+          expect(gm.cueSelector.next().value).toBe(expected);
+        });
+      });
+      // Test that the random cue selector is then used
+      [...Array(presentationPhaseLength)].forEach(() => {
+        expect(gm.cueSelector.next().value).toBe('FOO');
+      });
+
+      // Test that cue selection then goes back to the structured sequence
+      [...Array(count)].forEach(() => {
+        sequence.forEach((expected) => {
+          expect(gm.cueSelector.next().value).toBe(expected);
+        });
+      });
+    });
+  });
 });
