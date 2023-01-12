@@ -156,16 +156,13 @@ export default class GameManager {
 
   *cueGenerator(): Generator<string, string, unknown> {
     while (true) {
-      let callCount = 1;
       for (const id of this.m_structuredPresentationPhase) {
         yield id;
-        callCount++;
       }
       let i = 1;
       while (i <= this.m_presentationPhaseLength) {
         yield this.randomCueId();
         i++;
-        callCount++;
       }
     }
   }
