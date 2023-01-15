@@ -1,45 +1,9 @@
-import GamePhaseController from './GamePhaseController.interface';
-import { Input } from 'phaser';
+import { Input, Events } from 'phaser';
 import { CueConfiguration } from '../objects';
 
 export interface CueCreationConfig extends CueConfiguration {
   key: number;
 }
-
-const cueConfigs: CueCreationConfig[] = [
-  {
-    id: 'LL',
-    x: 160,
-    y: 300,
-    radius: 50,
-    text: 'D',
-    key: Input.Keyboard.KeyCodes.D,
-  },
-  {
-    id: 'L',
-    x: 320,
-    y: 300,
-    radius: 50,
-    text: 'F',
-    key: Input.Keyboard.KeyCodes.F,
-  },
-  {
-    id: 'R',
-    x: 480,
-    y: 300,
-    radius: 50,
-    text: 'J',
-    key: Input.Keyboard.KeyCodes.J,
-  },
-  {
-    id: 'RR',
-    x: 640,
-    y: 300,
-    radius: 50,
-    text: 'K',
-    key: Input.Keyboard.KeyCodes.K,
-  },
-];
 
 export enum GamePhase {
   START,
@@ -75,6 +39,9 @@ export default class GameManager {
 
   private m_currentGamePhase: GamePhase;
 
+  private m_eventEmitter: Events.EventEmitter;
+  private m_cueConfigurations: CueCreationConfig[] = [];
+
   // TODO: make these magic numbers less magic
   private m_structuredSequence: string[] = [
     'LL',
@@ -99,15 +66,58 @@ export default class GameManager {
 
   private m_cueSelector: Generator<string, string, unknown>;
 
-  constructor() {
+  constructor(eventEmitter: Events.EventEmitter) {
+    this.m_eventEmitter = eventEmitter;
+    this.constructCueConfigurations();
     this.m_currentGamePhase = GamePhase.START;
     this.m_structuredPresentationPhase =
       this.buildStructuredPresentationPhase();
     this.m_cueSelector = this.cueGenerator();
   }
 
+  constructCueConfigurations() {
+    this.m_cueConfigurations = [
+      {
+        id: 'LL',
+        x: 160,
+        y: 300,
+        radius: 50,
+        text: 'D',
+        key: Input.Keyboard.KeyCodes.D,
+        eventEmitter: this.m_eventEmitter,
+      },
+      {
+        id: 'L',
+        x: 320,
+        y: 300,
+        radius: 50,
+        text: 'F',
+        key: Input.Keyboard.KeyCodes.F,
+        eventEmitter: this.m_eventEmitter,
+      },
+      {
+        id: 'R',
+        x: 480,
+        y: 300,
+        radius: 50,
+        text: 'J',
+        key: Input.Keyboard.KeyCodes.J,
+        eventEmitter: this.m_eventEmitter,
+      },
+      {
+        id: 'RR',
+        x: 640,
+        y: 300,
+        radius: 50,
+        text: 'K',
+        key: Input.Keyboard.KeyCodes.K,
+        eventEmitter: this.m_eventEmitter,
+      },
+    ];
+  }
+
   get cueConfigurations(): CueCreationConfig[] {
-    return cueConfigs;
+    return this.m_cueConfigurations;
   }
 
   get currentGamePhase(): GamePhase {
@@ -151,7 +161,9 @@ export default class GameManager {
   }
 
   randomCueId(): string {
-    return cueConfigs[Math.floor(Math.random() * cueConfigs.length)].id;
+    return this.m_cueConfigurations[
+      Math.floor(Math.random() * this.m_cueConfigurations.length)
+    ].id;
   }
 
   *cueGenerator(): Generator<string, string, unknown> {
@@ -174,23 +186,20 @@ export default class GameManager {
     return cueForKey?.id;
   }
 
-  handlePhaseUpdate(
-    timeInPhase: integer,
-    phaseController: GamePhaseController
-  ): integer {
+  handlePhaseUpdate(timeInPhase: integer): integer {
     const phaseDuration = this.phaseDuration(this.currentGamePhase);
     let resultTime = timeInPhase;
     if (this.currentGamePhase === GamePhase.DISPLAY_RESULTS) {
-      phaseController.displayResults();
+      this.m_eventEmitter.emit('displayResults');
     }
 
     if (timeInPhase >= phaseDuration) {
       const newPhase = this.nextPhase();
       this.currentGamePhase = newPhase;
       if (newPhase === GamePhase.PRESENTATION) {
-        phaseController.presentCue(this.m_cueSelector.next().value);
+        this.m_eventEmitter.emit('presentCue', this.m_cueSelector.next().value);
       } else if (newPhase === GamePhase.WAIT) {
-        phaseController.waitForResponse();
+        this.m_eventEmitter.emit('reset');
       }
       resultTime = 0;
     }

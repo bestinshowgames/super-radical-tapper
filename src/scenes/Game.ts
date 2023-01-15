@@ -1,78 +1,58 @@
 import Phaser from 'phaser';
 import { GameManager, CueCreationConfig, GamePhase } from '../controllers';
-import type { GamePhaseController } from '../controllers';
 import { Cue, CueStatus } from '../objects';
+import ResponseText from '../objects/ResponseText/ResponseText';
+import Text from '../objects/Text/Text';
 
-interface GameContainer {
-  readonly failText?: Phaser.GameObjects.Text;
-  readonly successText?: Phaser.GameObjects.Text;
-  highlightedCue?: Cue;
-  cues: { [key: string]: Cue };
-  resetCues(): void;
-  resetResultTexts(): void;
-}
-
-class GameController implements GamePhaseController {
-  readonly container: GameContainer;
-  constructor(container: GameContainer) {
-    this.container = container;
-  }
-
-  displayResults(): void {
-    const responseStatus = this.container.highlightedCue?.status;
-    const didSucceed = responseStatus === CueStatus.SUCCEED;
-    if (!didSucceed) {
-      this.container.failText?.setVisible(true);
-      this.container.highlightedCue?.fail();
-    } else {
-      this.container.successText?.setVisible(true);
-    }
-  }
-
-  presentCue(cueKey: string): integer {
-    this.container.resetCues();
-    this.container.highlightedCue = this.container.cues[cueKey];
-    this.container.highlightedCue.highlight();
-    return 0;
-  }
-
-  waitForResponse(): integer {
-    this.container.resetResultTexts();
-    this.container.resetCues();
-    return 0;
-  }
-}
-
-export default class Game extends Phaser.Scene implements GameContainer {
-  failText: Phaser.GameObjects.Text | undefined = undefined;
-  successText: Phaser.GameObjects.Text | undefined = undefined;
+export default class Game extends Phaser.Scene {
   gm: GameManager;
-  controller: GameController;
   timeInPhase = 0;
   cues: { [key: string]: Cue } = {};
   highlightedCue: Cue | undefined = undefined;
 
+  eventEmitter: Phaser.Events.EventEmitter;
+
   constructor() {
     super('Game');
-    this.gm = new GameManager();
-    this.controller = new GameController(this);
+    this.eventEmitter = new Phaser.Events.EventEmitter();
+    this.gm = new GameManager(this.eventEmitter);
   }
 
   create() {
     this.input.keyboard.createCursorKeys();
-    this.add
-      .text(400, 50, 'Super Radical Tapper', { font: '64px Toriko' })
-      .setOrigin(0.5);
 
-    this.failText = this.add
-      .text(400, 150, 'OUCH!', { font: '64px Toriko' })
-      .setOrigin(0.5)
-      .setVisible(false);
+    this.add.existing(
+      new Text(this, {
+        x: 400,
+        y: 50,
+        text: 'Super Radical Tapper!',
+        style: { font: '64px Toriko' },
+      })
+    );
 
-    this.successText = this.add
-      .text(400, 150, 'SCORE!', { font: '64px Toriko' })
-      .setOrigin(0.5)
-      .setVisible(false);
+    this.add.existing(
+      new ResponseText(this, {
+        x: 400,
+        y: 150,
+        text: 'OUCH!',
+        style: { font: '64px Toriko' },
+        visible: false,
+        eventEmitter: this.eventEmitter,
+        respondOn: 'fail',
+      })
+    );
+
+    this.add.existing(
+      new ResponseText(this, {
+        x: 400,
+        y: 150,
+        text: 'SCORE!',
+        style: { font: '64px Toriko' },
+        visible: false,
+        eventEmitter: this.eventEmitter,
+        respondOn: 'succeed',
+      })
+    );
 
     this.input.keyboard.on('keydown', this.processInput, this);
 
@@ -80,23 +60,24 @@ export default class Game extends Phaser.Scene implements GameContainer {
       (cueConfig: CueCreationConfig) =>
         (this.cues[cueConfig.id] = new Cue(this, cueConfig))
     );
+
+    this.eventEmitter.on('presentCue', (cueKey: string) => {
+      this.eventEmitter.emit('reset');
+      this.highlightedCue = this.cues[cueKey];
+      this.highlightedCue.highlight();
+    });
+
+    this.eventEmitter.on('displayResults', () => {
+      const responseStatus = this.highlightedCue?.status;
+      responseStatus === CueStatus.SUCCEED
+        ? this.eventEmitter.emit('succeed')
+        : this.eventEmitter.emit('fail');
+    });
   }
 
   update(_time: number, delta: number) {
     this.timeInPhase += delta;
-    this.timeInPhase = this.gm.handlePhaseUpdate(
-      this.timeInPhase,
-      this.controller
-    );
-  }
-
-  resetCues() {
-    Object.keys(this.cues).forEach((cueId) => this.cues[cueId].rest());
-  }
-
-  resetResultTexts() {
-    this.failText?.setVisible(false);
-    this.successText?.setVisible(false);
+    this.timeInPhase = this.gm.handlePhaseUpdate(this.timeInPhase);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -104,10 +85,10 @@ export default class Game extends Phaser.Scene implements GameContainer {
     const key: number = event.keyCode;
     if (this.gm.currentGamePhase === GamePhase.RESPONSE_COLLECTION) {
       const cueId: string | undefined = this.gm.cueForKey(key);
-      if (cueId && cueId == this.highlightedCue?.id) {
-        this.highlightedCue?.succeed();
-      } else {
-        this.highlightedCue?.fail();
+      if (cueId) {
+        cueId == this.highlightedCue?.id
+          ? this.eventEmitter.emit('succeed')
+          : this.eventEmitter.emit('fail');
       }
       this.gm.currentGamePhase = this.gm.nextPhase();
       this.timeInPhase = 0;

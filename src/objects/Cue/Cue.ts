@@ -50,6 +50,24 @@ export default class Cue extends Phaser.GameObjects.Container {
       Phaser.Display.Align.In.Center(cueText, this.baseCircle);
     }
 
+    this.options.eventEmitter.on('succeed', () => {
+      if (this.status == CueStatus.HIGHLIGHT) {
+        this.succeed();
+      }
+    });
+
+    this.options.eventEmitter.on('fail', () => {
+      if (this.status == CueStatus.HIGHLIGHT) {
+        this.fail();
+      }
+    });
+
+    this.options.eventEmitter.addListener('reset', () => {
+      if (this.status != CueStatus.REST) {
+        this.rest();
+      }
+    });
+
     this.rest();
   }
 
