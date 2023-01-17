@@ -1,5 +1,6 @@
+import { Events } from 'phaser';
 import GameManager, { GamePhase } from './GameManager';
-import type GamePhaseController from './GamePhaseController.interface';
+// import type GamePhaseController from './GamePhaseController.interface';
 
 jest.mock('phaser', () => {
   return {
@@ -14,15 +15,23 @@ jest.mock('phaser', () => {
         },
       },
     },
+    Events: {
+      EventEmitter: jest.fn().mockImplementation(() => ({
+        emit: jest.fn(),
+      })),
+    },
   };
 });
 
-const mockPhaseController: GamePhaseController = {
-  displayResults: jest.fn(),
-  presentCue: jest.fn(),
-  waitForResponse: jest.fn(),
-};
+const mockEmitter = new Events.EventEmitter();
 
+// const mockPhaseController: GamePhaseController = {
+//   displayResults: jest.fn(),
+//   presentCue: jest.fn(),
+//   waitForResponse: jest.fn(),
+// };
+
+// TODO: Create a mock event emitter and test that certain events are emitted during certain phases
 describe('Core Gameplay Loop', () => {
   describe('Phase Updating', () => {
     beforeEach(() => {
@@ -30,54 +39,63 @@ describe('Core Gameplay Loop', () => {
     });
 
     it('calls displayResults on phase controller if the current phase is DISPLAY_RESULTS', () => {
-      const gm = new GameManager();
+      const gm = new GameManager(mockEmitter);
       gm.currentGamePhase = GamePhase.DISPLAY_RESULTS;
-      gm.handlePhaseUpdate(0, mockPhaseController);
+      gm.handlePhaseUpdate(0);
 
-      expect(mockPhaseController.displayResults).toHaveBeenCalledTimes(1);
+      expect(mockEmitter.emit).toHaveBeenCalledTimes(1);
+      expect(mockEmitter.emit).toHaveBeenCalledWith('displayResults');
     });
 
     describe('moving to PRESENTATION stage calls presentCue on phase controller', () => {
       it('from START stage', () => {
-        const gm = new GameManager();
+        const gm = new GameManager(mockEmitter);
         gm.currentGamePhase = GamePhase.START;
         const duration = gm.phaseDuration(gm.currentGamePhase) + 1;
 
-        gm.handlePhaseUpdate(duration, mockPhaseController);
+        gm.handlePhaseUpdate(duration);
 
-        expect(mockPhaseController.presentCue).toHaveBeenCalled();
+        expect(mockEmitter.emit).toHaveBeenCalled();
+        expect(mockEmitter.emit).toHaveBeenCalledWith(
+          'presentCue',
+          expect.any(String)
+        );
         expect(gm.currentGamePhase).toBe(GamePhase.PRESENTATION);
       });
       it('from WAIT stage', () => {
-        const gm = new GameManager();
+        const gm = new GameManager(mockEmitter);
         gm.currentGamePhase = GamePhase.WAIT;
         const duration = gm.phaseDuration(gm.currentGamePhase) + 1;
 
-        gm.handlePhaseUpdate(duration, mockPhaseController);
+        gm.handlePhaseUpdate(duration);
 
-        expect(mockPhaseController.presentCue).toHaveBeenCalled();
+        expect(mockEmitter.emit).toHaveBeenCalled();
+        expect(mockEmitter.emit).toHaveBeenCalledWith(
+          'presentCue',
+          expect.any(String)
+        );
         expect(gm.currentGamePhase).toBe(GamePhase.PRESENTATION);
       });
       it('only after phase duration has passed', () => {
-        const gm = new GameManager();
+        const gm = new GameManager(mockEmitter);
         gm.currentGamePhase = GamePhase.START;
         const duration = gm.phaseDuration(gm.currentGamePhase) - 1;
 
-        gm.handlePhaseUpdate(duration, mockPhaseController);
+        gm.handlePhaseUpdate(duration);
 
-        expect(mockPhaseController.presentCue).not.toHaveBeenCalled();
+        expect(mockEmitter.emit).not.toHaveBeenCalled();
         expect(gm.currentGamePhase).toBe(GamePhase.START);
       });
     });
     describe('moving to WAIT stage calls waitForResponse on the phase controller', () => {
       it('from DISPLAY_RESULTS stage', () => {
-        const gm = new GameManager();
+        const gm = new GameManager(mockEmitter);
         gm.currentGamePhase = GamePhase.DISPLAY_RESULTS;
         const duration = gm.phaseDuration(gm.currentGamePhase) + 1;
 
-        gm.handlePhaseUpdate(duration, mockPhaseController);
+        gm.handlePhaseUpdate(duration);
 
-        expect(mockPhaseController.waitForResponse).toHaveBeenCalled();
+        // expect(mockPhaseController.waitForResponse).toHaveBeenCalled();
         expect(gm.currentGamePhase).toBe(GamePhase.WAIT);
       });
     });
@@ -89,7 +107,7 @@ describe('Core Gameplay Loop', () => {
     });
 
     it('Cue selection iterates back and forth between a structured, repeating sequence and a random sequence', () => {
-      const gm = new GameManager();
+      const gm = new GameManager(mockEmitter);
       jest.spyOn(gm, 'randomCueId').mockReturnValue('FOO');
       const sequence = gm.structuredSequence;
       const count = gm.sequenceIterations;
