@@ -66,6 +66,8 @@ export default class GameManager {
 
   private m_cueSelector: Generator<string, string, unknown>;
 
+  private m_score = 0;
+
   constructor(eventEmitter: Events.EventEmitter) {
     this.m_eventEmitter = eventEmitter;
     this.constructCueConfigurations();
@@ -118,6 +120,18 @@ export default class GameManager {
 
   get cueConfigurations(): CueCreationConfig[] {
     return this.m_cueConfigurations;
+  }
+
+  get score(): number {
+    return this.m_score;
+  }
+
+  set score(newScore: number) {
+    this.m_score = newScore;
+  }
+
+  incrementScore(): void {
+    this.m_score += 10;
   }
 
   get currentGamePhase(): GamePhase {
@@ -194,13 +208,22 @@ export default class GameManager {
     }
 
     if (timeInPhase >= phaseDuration) {
-      const newPhase = this.nextPhase();
-      this.currentGamePhase = newPhase;
-      if (newPhase === GamePhase.PRESENTATION) {
-        this.m_eventEmitter.emit('presentCue', this.m_cueSelector.next().value);
-      } else if (newPhase === GamePhase.WAIT) {
-        this.m_eventEmitter.emit('reset');
+      if (this.currentGamePhase == GamePhase.RESPONSE_COLLECTION) {
+        this.m_eventEmitter.emit('fail');
+        this.currentGamePhase = this.nextPhase();
+      } else {
+        const newPhase = this.nextPhase();
+        this.currentGamePhase = newPhase;
+        if (newPhase === GamePhase.PRESENTATION) {
+          this.m_eventEmitter.emit(
+            'presentCue',
+            this.m_cueSelector.next().value
+          );
+        } else if (newPhase === GamePhase.WAIT) {
+          this.m_eventEmitter.emit('reset');
+        }
       }
+
       resultTime = 0;
     }
 

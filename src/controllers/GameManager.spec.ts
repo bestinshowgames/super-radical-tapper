@@ -25,13 +25,6 @@ jest.mock('phaser', () => {
 
 const mockEmitter = new Events.EventEmitter();
 
-// const mockPhaseController: GamePhaseController = {
-//   displayResults: jest.fn(),
-//   presentCue: jest.fn(),
-//   waitForResponse: jest.fn(),
-// };
-
-// TODO: Create a mock event emitter and test that certain events are emitted during certain phases
 describe('Core Gameplay Loop', () => {
   describe('Phase Updating', () => {
     beforeEach(() => {

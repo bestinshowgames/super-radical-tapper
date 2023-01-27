@@ -1,14 +1,17 @@
 import Phaser from 'phaser';
 import { GameManager, CueCreationConfig, GamePhase } from '../controllers';
-import { Cue, CueStatus } from '../objects';
-import ResponseText from '../objects/ResponseText/ResponseText';
-import Text from '../objects/Text/Text';
+import { Cue } from '../objects/Cue';
+import { ResponseText } from '../objects/ResponseText';
+import { Text } from '../objects/Text';
+import { HUDContainer } from '../objects/HUDContainer';
 
+// TODO: How your managing the texts in the scene is kinda cruddy. Simplify it and see what happens
 export default class Game extends Phaser.Scene {
   gm: GameManager;
   timeInPhase = 0;
   cues: { [key: string]: Cue } = {};
   highlightedCue: Cue | undefined = undefined;
+  scoreTextContainer: HUDContainer | undefined;
 
   eventEmitter: Phaser.Events.EventEmitter;
 
@@ -29,6 +32,15 @@ export default class Game extends Phaser.Scene {
         style: { font: '64px Toriko' },
       })
     );
+
+    this.scoreTextContainer = new HUDContainer(this, {
+      x: 100,
+      y: 100,
+      titleText: 'Score:',
+      initialValueText: '0',
+      style: { font: '64px Toriko' },
+    });
+    this.add.existing(this.scoreTextContainer);
 
     this.add.existing(
       new ResponseText(this, {
@@ -67,11 +79,9 @@ export default class Game extends Phaser.Scene {
       this.highlightedCue.highlight();
     });
 
-    this.eventEmitter.on('displayResults', () => {
-      const responseStatus = this.highlightedCue?.status;
-      responseStatus === CueStatus.SUCCEED
-        ? this.eventEmitter.emit('succeed')
-        : this.eventEmitter.emit('fail');
+    this.eventEmitter.on('succeed', () => {
+      this.gm.incrementScore();
+      this.scoreTextContainer?.update(this.gm.score.toString());
     });
   }
 
