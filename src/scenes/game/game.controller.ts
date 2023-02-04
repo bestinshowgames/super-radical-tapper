@@ -1,9 +1,4 @@
-import { Input, Events } from 'phaser';
-import { CueConfiguration } from '../objects';
-
-export interface CueCreationConfig extends CueConfiguration {
-  key: number;
-}
+import { Events } from 'phaser';
 
 export enum GamePhase {
   START,
@@ -13,7 +8,7 @@ export enum GamePhase {
   WAIT,
 }
 
-export default class GameManager {
+export default class GameController {
   private phaseConfiguration = {
     [GamePhase.START]: {
       duration: 3000,
@@ -40,9 +35,9 @@ export default class GameManager {
   private m_currentGamePhase: GamePhase;
 
   private m_eventEmitter: Events.EventEmitter;
-  private m_cueConfigurations: CueCreationConfig[] = [];
+  private _cueKeys: string[];
 
-  // TODO: make these magic numbers less magic
+  // TODO: Create ENUMS to house cue keys to decouple things more
   private m_structuredSequence: string[] = [
     'LL',
     'L',
@@ -57,6 +52,7 @@ export default class GameManager {
     'L',
     'RR',
   ];
+  // TODO: make these magic numbers less magic
   private m_sequnceLength = 12;
   private m_sequenceIterations = 8;
   private m_presentationPhaseLength =
@@ -68,58 +64,13 @@ export default class GameManager {
 
   private m_score = 0;
 
-  constructor(eventEmitter: Events.EventEmitter) {
+  constructor(eventEmitter: Events.EventEmitter, cueKeys: string[]) {
     this.m_eventEmitter = eventEmitter;
-    this.constructCueConfigurations();
+    this._cueKeys = cueKeys;
     this.m_currentGamePhase = GamePhase.START;
     this.m_structuredPresentationPhase =
       this.buildStructuredPresentationPhase();
     this.m_cueSelector = this.cueGenerator();
-  }
-
-  constructCueConfigurations() {
-    this.m_cueConfigurations = [
-      {
-        id: 'LL',
-        x: 160,
-        y: 300,
-        radius: 50,
-        text: 'D',
-        key: Input.Keyboard.KeyCodes.D,
-        eventEmitter: this.m_eventEmitter,
-      },
-      {
-        id: 'L',
-        x: 320,
-        y: 300,
-        radius: 50,
-        text: 'F',
-        key: Input.Keyboard.KeyCodes.F,
-        eventEmitter: this.m_eventEmitter,
-      },
-      {
-        id: 'R',
-        x: 480,
-        y: 300,
-        radius: 50,
-        text: 'J',
-        key: Input.Keyboard.KeyCodes.J,
-        eventEmitter: this.m_eventEmitter,
-      },
-      {
-        id: 'RR',
-        x: 640,
-        y: 300,
-        radius: 50,
-        text: 'K',
-        key: Input.Keyboard.KeyCodes.K,
-        eventEmitter: this.m_eventEmitter,
-      },
-    ];
-  }
-
-  get cueConfigurations(): CueCreationConfig[] {
-    return this.m_cueConfigurations;
   }
 
   get score(): number {
@@ -175,9 +126,7 @@ export default class GameManager {
   }
 
   randomCueId(): string {
-    return this.m_cueConfigurations[
-      Math.floor(Math.random() * this.m_cueConfigurations.length)
-    ].id;
+    return this._cueKeys[Math.floor(Math.random() * this._cueKeys.length)];
   }
 
   *cueGenerator(): Generator<string, string, unknown> {
@@ -191,13 +140,6 @@ export default class GameManager {
         i++;
       }
     }
-  }
-
-  cueForKey(keyCode: number): string | undefined {
-    const cueForKey = this.cueConfigurations.find(
-      (config) => config.key == keyCode
-    );
-    return cueForKey?.id;
   }
 
   handlePhaseUpdate(timeInPhase: integer): integer {

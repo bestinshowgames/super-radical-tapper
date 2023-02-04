@@ -3,18 +3,28 @@
   <head>
     <title>Super Radical Tapper</title>
     <meta charset="utf-8" />
-    <style>
-      body {
-        margin: 0;
-      }
-      @font-face {
-        font-family: Toriko;
-        src: url('/assets/Toriko.ttf');
-      }
-    </style>
+    <link
+      rel="preload"
+      href="assets/Toriko.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+    <link rel="stylesheet" href="main.css" as="style" />
     <script type="module" src="/src/index.ts"></script>
   </head>
   <body>
+    <!-- Make sure the font is loaded since preloading doesn't seem to be working -->
+    <div
+      style="
+        font-family: Toriko;
+        position: absolute;
+        left: -1000px;
+        visibility: hidden;
+      "
+    >
+      .
+    </div>
     <div id="game"></div>
   </body>
 </html>

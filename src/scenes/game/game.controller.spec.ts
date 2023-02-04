@@ -1,5 +1,5 @@
 import { Events } from 'phaser';
-import GameManager, { GamePhase } from './GameManager';
+import GameController, { GamePhase } from './game.controller';
 // import type GamePhaseController from './GamePhaseController.interface';
 
 jest.mock('phaser', () => {
@@ -32,7 +32,7 @@ describe('Core Gameplay Loop', () => {
     });
 
     it('calls displayResults on phase controller if the current phase is DISPLAY_RESULTS', () => {
-      const gm = new GameManager(mockEmitter);
+      const gm = new GameController(mockEmitter, ['LL', 'L', 'R', 'RR']);
       gm.currentGamePhase = GamePhase.DISPLAY_RESULTS;
       gm.handlePhaseUpdate(0);
 
@@ -42,7 +42,7 @@ describe('Core Gameplay Loop', () => {
 
     describe('moving to PRESENTATION stage calls presentCue on phase controller', () => {
       it('from START stage', () => {
-        const gm = new GameManager(mockEmitter);
+        const gm = new GameController(mockEmitter, ['LL', 'L', 'R', 'RR']);
         gm.currentGamePhase = GamePhase.START;
         const duration = gm.phaseDuration(gm.currentGamePhase) + 1;
 
@@ -56,7 +56,7 @@ describe('Core Gameplay Loop', () => {
         expect(gm.currentGamePhase).toBe(GamePhase.PRESENTATION);
       });
       it('from WAIT stage', () => {
-        const gm = new GameManager(mockEmitter);
+        const gm = new GameController(mockEmitter, ['LL', 'L', 'R', 'RR']);
         gm.currentGamePhase = GamePhase.WAIT;
         const duration = gm.phaseDuration(gm.currentGamePhase) + 1;
 
@@ -70,7 +70,7 @@ describe('Core Gameplay Loop', () => {
         expect(gm.currentGamePhase).toBe(GamePhase.PRESENTATION);
       });
       it('only after phase duration has passed', () => {
-        const gm = new GameManager(mockEmitter);
+        const gm = new GameController(mockEmitter, ['LL', 'L', 'R', 'RR']);
         gm.currentGamePhase = GamePhase.START;
         const duration = gm.phaseDuration(gm.currentGamePhase) - 1;
 
@@ -82,7 +82,7 @@ describe('Core Gameplay Loop', () => {
     });
     describe('moving to WAIT stage calls waitForResponse on the phase controller', () => {
       it('from DISPLAY_RESULTS stage', () => {
-        const gm = new GameManager(mockEmitter);
+        const gm = new GameController(mockEmitter, ['LL', 'L', 'R', 'RR']);
         gm.currentGamePhase = GamePhase.DISPLAY_RESULTS;
         const duration = gm.phaseDuration(gm.currentGamePhase) + 1;
 
@@ -100,7 +100,7 @@ describe('Core Gameplay Loop', () => {
     });
 
     it('Cue selection iterates back and forth between a structured, repeating sequence and a random sequence', () => {
-      const gm = new GameManager(mockEmitter);
+      const gm = new GameController(mockEmitter, ['LL', 'L', 'R', 'RR']);
       jest.spyOn(gm, 'randomCueId').mockReturnValue('FOO');
       const sequence = gm.structuredSequence;
       const count = gm.sequenceIterations;

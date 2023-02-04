@@ -12,5 +12,6 @@ export default interface CueConfiguration {
   successColor?: HEX;
   failureColor?: HEX;
   text?: string;
+  key: number;
   eventEmitter: Events.EventEmitter;
 }

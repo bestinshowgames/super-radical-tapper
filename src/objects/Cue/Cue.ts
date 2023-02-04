@@ -12,6 +12,7 @@ export default class Cue extends Phaser.GameObjects.Container {
   scene: Phaser.Scene;
   options: CueConfiguration;
   id: string;
+  _key: number;
   private m_status: CueStatus = CueStatus.REST;
 
   baseCircle: Phaser.GameObjects.Arc;
@@ -28,6 +29,7 @@ export default class Cue extends Phaser.GameObjects.Container {
     this.scene = scene;
     this.options = options;
     this.id = options.id;
+    this._key = options.key;
     const { x, y } = options;
 
     this.baseCircle = this.createCircle();
@@ -77,6 +79,10 @@ export default class Cue extends Phaser.GameObjects.Container {
 
   get status(): CueStatus {
     return this.m_status;
+  }
+
+  get key(): number {
+    return this._key;
   }
 
   private set status(newStatus: CueStatus) {
