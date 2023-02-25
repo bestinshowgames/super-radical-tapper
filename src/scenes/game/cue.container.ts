@@ -57,7 +57,7 @@ export default class CueContainer extends GameObjects.Container {
     });
   }
 
-  get highlightedCueKey(): string {
+  get highlightedCueId(): string {
     return this.highlightedCue.id;
   }
 

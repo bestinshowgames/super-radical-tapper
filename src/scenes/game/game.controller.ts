@@ -1,4 +1,8 @@
-import { Events } from 'phaser';
+import { Scene, Input } from 'phaser';
+import CueContainer from './cue.container';
+import CueGenerator from './cue.generator';
+import PhaseController from './phase.controller';
+import InputMediator, { InputEvents } from './input.mediator';
 
 export enum GamePhase {
   START,
@@ -9,166 +13,75 @@ export enum GamePhase {
 }
 
 export default class GameController {
-  private phaseConfiguration = {
-    [GamePhase.START]: {
-      duration: 3000,
-      nextPhase: GamePhase.PRESENTATION,
-    },
-    [GamePhase.PRESENTATION]: {
-      duration: 0,
-      nextPhase: GamePhase.RESPONSE_COLLECTION,
-    },
-    [GamePhase.RESPONSE_COLLECTION]: {
-      duration: 500,
-      nextPhase: GamePhase.DISPLAY_RESULTS,
-    },
-    [GamePhase.DISPLAY_RESULTS]: {
-      duration: 500,
-      nextPhase: GamePhase.WAIT,
-    },
-    [GamePhase.WAIT]: {
-      duration: 250,
-      nextPhase: GamePhase.PRESENTATION,
-    },
-  };
+  private _score = 0;
+  private _scene: Scene;
+  private _phaseController: PhaseController;
+  private _cueGenerator: CueGenerator;
+  private _cueContainer: CueContainer;
 
-  private m_currentGamePhase: GamePhase;
+  constructor(
+    scene: Scene,
+    phaseController: PhaseController,
+    cueGenerator: CueGenerator,
+    cueContainer: CueContainer
+  ) {
+    this._scene = scene;
+    this._phaseController = phaseController;
+    this._cueGenerator = cueGenerator;
+    this._cueContainer = cueContainer;
 
-  private m_eventEmitter: Events.EventEmitter;
-  private _cueKeys: string[];
+    InputMediator.mediateKeyboardStream(
+      this._scene.input.keyboard,
+      this._scene.events
+    );
 
-  // TODO: Create ENUMS to house cue keys to decouple things more
-  private m_structuredSequence: string[] = [
-    'LL',
-    'L',
-    'LL',
-    'R',
-    'RR',
-    'L',
-    'R',
-    'LL',
-    'RR',
-    'R',
-    'L',
-    'RR',
-  ];
-  // TODO: make these magic numbers less magic
-  private m_sequnceLength = 12;
-  private m_sequenceIterations = 8;
-  private m_presentationPhaseLength =
-    this.m_sequnceLength * this.m_sequenceIterations;
+    // TODO: The awkward part here is that CueContainer holds rendering info, which we want to de-couple from the game logic. See if that can be moved elsewhere
+    this._scene.events.on('input', (event: InputEvents, data: any) => {
+      if (
+        event == InputEvents.CUE_INPUT &&
+        this._phaseController.currentPhase == GamePhase.RESPONSE_COLLECTION
+      ) {
+        this._scene.events.emit(
+          'displayResults',
+          data.id === this._cueContainer.highlightedCueId
+        );
+        this._phaseController.endPhase(true);
+      }
+    });
 
-  private m_structuredPresentationPhase: string[];
+    this._scene.events.on(
+      'changePhase',
+      (currentPhase: GamePhase, newPhase: GamePhase, premature: boolean) => {
+        if (currentPhase === GamePhase.RESPONSE_COLLECTION && !premature) {
+          this._scene.events.emit('displayResults', false);
+        } else if (newPhase === GamePhase.WAIT) {
+          this._scene.events.emit('reset');
+        } else if (newPhase === GamePhase.PRESENTATION) {
+          this._scene.events.emit('presentCue', this._cueGenerator.nextCue);
+        }
+      }
+    );
 
-  private m_cueSelector: Generator<string, string, unknown>;
+    this._scene.events.on('displayResults', (correct: boolean) => {
+      correct
+        ? this._scene.events.emit('succeed')
+        : this._scene.events.emit('fail');
+    });
 
-  private m_score = 0;
-
-  constructor(eventEmitter: Events.EventEmitter, cueKeys: string[]) {
-    this.m_eventEmitter = eventEmitter;
-    this._cueKeys = cueKeys;
-    this.m_currentGamePhase = GamePhase.START;
-    this.m_structuredPresentationPhase =
-      this.buildStructuredPresentationPhase();
-    this.m_cueSelector = this.cueGenerator();
+    this._scene.events.on('succeed', () => {
+      this.incrementScore();
+    });
   }
 
   get score(): number {
-    return this.m_score;
+    return this._score;
   }
 
   set score(newScore: number) {
-    this.m_score = newScore;
+    this._score = newScore;
   }
 
   incrementScore(): void {
-    this.m_score += 10;
-  }
-
-  get currentGamePhase(): GamePhase {
-    return this.m_currentGamePhase;
-  }
-
-  set currentGamePhase(newGamePhase: GamePhase) {
-    this.m_currentGamePhase = newGamePhase;
-  }
-
-  get structuredSequence(): string[] {
-    return this.m_structuredSequence;
-  }
-
-  get sequenceIterations(): number {
-    return this.m_sequenceIterations;
-  }
-
-  get presentationPhaseLength(): number {
-    return this.m_presentationPhaseLength;
-  }
-
-  get cueSelector(): Generator<string, string, undefined> {
-    return this.m_cueSelector;
-  }
-
-  nextPhase(): GamePhase {
-    return this.phaseConfiguration[this.currentGamePhase].nextPhase;
-  }
-
-  phaseDuration(gamePhase: GamePhase): number {
-    return this.phaseConfiguration[gamePhase].duration;
-  }
-
-  buildStructuredPresentationPhase(): string[] {
-    let phase: string[] = [];
-    [...Array(this.m_sequenceIterations)].forEach(() => {
-      phase = phase.concat([...this.m_structuredSequence]);
-    });
-    return phase;
-  }
-
-  randomCueId(): string {
-    return this._cueKeys[Math.floor(Math.random() * this._cueKeys.length)];
-  }
-
-  *cueGenerator(): Generator<string, string, unknown> {
-    while (true) {
-      for (const id of this.m_structuredPresentationPhase) {
-        yield id;
-      }
-      let i = 1;
-      while (i <= this.m_presentationPhaseLength) {
-        yield this.randomCueId();
-        i++;
-      }
-    }
-  }
-
-  handlePhaseUpdate(timeInPhase: integer): integer {
-    const phaseDuration = this.phaseDuration(this.currentGamePhase);
-    let resultTime = timeInPhase;
-    if (this.currentGamePhase === GamePhase.DISPLAY_RESULTS) {
-      this.m_eventEmitter.emit('displayResults');
-    }
-
-    if (timeInPhase >= phaseDuration) {
-      if (this.currentGamePhase == GamePhase.RESPONSE_COLLECTION) {
-        this.m_eventEmitter.emit('fail');
-        this.currentGamePhase = this.nextPhase();
-      } else {
-        const newPhase = this.nextPhase();
-        this.currentGamePhase = newPhase;
-        if (newPhase === GamePhase.PRESENTATION) {
-          this.m_eventEmitter.emit(
-            'presentCue',
-            this.m_cueSelector.next().value
-          );
-        } else if (newPhase === GamePhase.WAIT) {
-          this.m_eventEmitter.emit('reset');
-        }
-      }
-
-      resultTime = 0;
-    }
-
-    return resultTime;
+    this._score += 10;
   }
 }
