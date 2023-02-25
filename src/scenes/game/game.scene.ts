@@ -1,14 +1,12 @@
 import { Scene, GameObjects } from 'phaser';
 import GameController from './game.controller';
 import CueContainer from './cue.container';
-import InputMediator, { InputEvents } from './input.mediator';
-import PhaseController, { GamePhase } from './phase.controller';
+import PhaseController from './phase.controller';
 import CueGenerator from './cue.generator';
 
 export default class Game extends Scene {
   private resultText!: GameObjects.Text;
   private scoreText!: GameObjects.Text;
-  private cueContainer!: CueContainer;
   private gm!: GameController;
 
   constructor() {

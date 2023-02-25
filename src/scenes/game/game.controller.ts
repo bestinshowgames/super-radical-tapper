@@ -1,4 +1,4 @@
-import { Scene, Input } from 'phaser';
+import { Scene } from 'phaser';
 import CueContainer from './cue.container';
 import CueGenerator from './cue.generator';
 import PhaseController from './phase.controller';
