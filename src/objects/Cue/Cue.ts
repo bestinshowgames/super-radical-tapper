@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import CueConfiguration, { HEX } from './CueConfiguration.interface';
+import CueConfiguration, { HEX } from './CueConfiguration';
 
 export enum CueStatus {
   REST,
@@ -13,7 +13,7 @@ export default class Cue extends Phaser.GameObjects.Container {
   options: CueConfiguration;
   id: string;
   _key: number;
-  private m_status: CueStatus = CueStatus.REST;
+  private _status: CueStatus = CueStatus.REST;
 
   baseCircle: Phaser.GameObjects.Arc;
   defaultBaseColor: HEX = '#FF43C2';
@@ -78,7 +78,7 @@ export default class Cue extends Phaser.GameObjects.Container {
   }
 
   get status(): CueStatus {
-    return this.m_status;
+    return this._status;
   }
 
   get key(): number {
@@ -86,7 +86,7 @@ export default class Cue extends Phaser.GameObjects.Container {
   }
 
   private set status(newStatus: CueStatus) {
-    this.m_status = newStatus;
+    this._status = newStatus;
   }
 
   rest() {

@@ -1,5 +1,5 @@
 import { Events } from 'phaser';
-import GameController, { GamePhase } from './game.controller';
+import GameController, { GamePhase } from './GameController';
 // import type GamePhaseController from './GamePhaseController.interface';
 
 jest.mock('phaser', () => {

@@ -1,8 +1,8 @@
 import { Scene } from 'phaser';
-import CueContainer from './cue.container';
-import CueGenerator from './cue.generator';
-import PhaseController from './phase.controller';
-import InputMediator, { InputEvents } from './input.mediator';
+import CueContainer from './CueContainer';
+import CueGenerator from './CueGenerator';
+import PhaseController from './PhaseController';
+import InputMediator, { InputEvents } from './InputMediator';
 
 export enum GamePhase {
   START,

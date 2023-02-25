@@ -1,4 +1,4 @@
-import CueFacet from './cue_facets';
+import CueFacet from './CueFacet';
 
 export default class CueGenerator {
   private _cueIds = CueFacet.CUE_FACETS.map((facet) => facet.id);

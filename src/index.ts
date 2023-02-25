@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import PhaserConfig from './PhaserConfig';
-import SceneManager from './scene.manager';
+import SceneManager from './SceneManager';
 
 new Phaser.Game(
   Object.assign(PhaserConfig, {

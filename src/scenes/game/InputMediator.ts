@@ -1,5 +1,5 @@
 import { Events } from 'phaser';
-import CueFacet from './cue_facets';
+import CueFacet from './CueFacet';
 
 export enum InputEvents {
   CUE_INPUT,

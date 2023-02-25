@@ -1,3 +1,3 @@
-import Game from './game/game.scene';
+import Game from './game/GameScene';
 
 export { Game };

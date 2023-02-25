@@ -1,8 +1,8 @@
 import { Scene, GameObjects } from 'phaser';
-import GameController from './game.controller';
-import CueContainer from './cue.container';
-import PhaseController from './phase.controller';
-import CueGenerator from './cue.generator';
+import GameController from './GameController';
+import CueContainer from './CueContainer';
+import PhaseController from './PhaseController';
+import CueGenerator from './CueGenerator';
 
 export default class Game extends Scene {
   private resultText!: GameObjects.Text;
