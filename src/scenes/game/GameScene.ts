@@ -3,6 +3,7 @@ import GameController from './GameController';
 import CueContainer from './CueContainer';
 import PhaseController from './PhaseController';
 import CueGenerator from './CueGenerator';
+import CueFacet from './CueFacet';
 
 export default class Game extends Scene {
   private resultText!: GameObjects.Text;
@@ -19,7 +20,20 @@ export default class Game extends Scene {
     this.gm = new GameController(
       this,
       new PhaseController(this),
-      new CueGenerator(),
+      new CueGenerator([
+        CueFacet.CUE_FACETS[0],
+        CueFacet.CUE_FACETS[1],
+        CueFacet.CUE_FACETS[0],
+        CueFacet.CUE_FACETS[2],
+        CueFacet.CUE_FACETS[3],
+        CueFacet.CUE_FACETS[1],
+        CueFacet.CUE_FACETS[2],
+        CueFacet.CUE_FACETS[0],
+        CueFacet.CUE_FACETS[3],
+        CueFacet.CUE_FACETS[2],
+        CueFacet.CUE_FACETS[1],
+        CueFacet.CUE_FACETS[3],
+      ]),
       new CueContainer(this)
     );
 

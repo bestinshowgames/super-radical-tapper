@@ -1,28 +1,14 @@
 import CueFacet from './CueFacet';
 
 export default class CueGenerator {
-  private _cueIds = CueFacet.CUE_FACETS.map((facet) => facet.id);
   private _structuredSequence: string[];
   private _sequenceIterations = 8; //TODO: magic number go brrrrr
   private _presentationPhaseLength: number;
   private _structuredPresentationPhase: string[];
   private _cueSelector: Generator<string, string, unknown>;
 
-  constructor() {
-    this._structuredSequence = [
-      this._cueIds[0],
-      this._cueIds[1],
-      this._cueIds[0],
-      this._cueIds[2],
-      this._cueIds[3],
-      this._cueIds[1],
-      this._cueIds[2],
-      this._cueIds[0],
-      this._cueIds[3],
-      this._cueIds[2],
-      this._cueIds[1],
-      this._cueIds[3],
-    ];
+  constructor(structuredSequence: CueFacet[]) {
+    this._structuredSequence = structuredSequence.map((facet) => facet.id);
 
     this._presentationPhaseLength =
       this._structuredSequence.length * this._sequenceIterations;
@@ -33,7 +19,7 @@ export default class CueGenerator {
     // this.setupEvents();
   }
 
-  buildStructuredPresentationPhase(): string[] {
+  private buildStructuredPresentationPhase(): string[] {
     let phase: string[] = [];
     [...Array(this._sequenceIterations)].forEach(() => {
       phase = phase.concat([...this._structuredSequence]);
@@ -42,10 +28,12 @@ export default class CueGenerator {
   }
 
   randomCueId(): string {
-    return this._cueIds[Math.floor(Math.random() * this._cueIds.length)];
+    return CueFacet.CUE_FACETS[
+      Math.floor(Math.random() * CueFacet.CUE_FACETS.length)
+    ].id;
   }
 
-  *cueGenerator(): Generator<string, string, unknown> {
+  private *cueGenerator(): Generator<string, string, unknown> {
     while (true) {
       for (const id of this._structuredPresentationPhase) {
         yield id;
@@ -60,5 +48,13 @@ export default class CueGenerator {
 
   get nextCue(): string {
     return this._cueSelector.next().value;
+  }
+
+  get presentationPhaseLength(): number {
+    return this._presentationPhaseLength;
+  }
+
+  get sequenceIterations(): number {
+    return this._sequenceIterations;
   }
 }
