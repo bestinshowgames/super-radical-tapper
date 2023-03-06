@@ -58,6 +58,14 @@ export default class PhaseController {
     return this._currentPhase;
   }
 
+  set currentPhase(newPhase: GamePhase) {
+    this._currentPhase = newPhase;
+  }
+
+  get timeInPhase(): number {
+    return this._timeInPhase;
+  }
+
   endPhase(premature: boolean = false): void {
     const newPhase = this.nextPhase(this._currentPhase);
     this._scene.events.emit(

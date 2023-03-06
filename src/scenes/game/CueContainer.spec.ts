@@ -34,27 +34,6 @@ jest.mock('../../objects', () => ({
   })),
 }));
 
-jest.mock('./CueFacet', () => ({
-  CUE_FACETS: [
-    {
-      id: 'LL',
-      key: Input.Keyboard.KeyCodes.D,
-    },
-    {
-      id: 'L',
-      key: Input.Keyboard.KeyCodes.F,
-    },
-    {
-      id: 'R',
-      key: Input.Keyboard.KeyCodes.J,
-    },
-    {
-      id: 'RR',
-      key: Input.Keyboard.KeyCodes.K,
-    },
-  ],
-}));
-
 const mockScene = new Scene({});
 
 describe('CueContainer', () => {
