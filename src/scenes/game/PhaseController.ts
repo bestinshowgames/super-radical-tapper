@@ -43,7 +43,9 @@ export default class PhaseController {
 
     this._currentPhase = GamePhase.START;
 
-    this.setupEvents();
+    this._scene.events.on('update', (_time: number, delta: number) => {
+      this.handleUpdate(delta);
+    });
   }
 
   phaseDuration(gamePhase: GamePhase): number {
@@ -66,6 +68,13 @@ export default class PhaseController {
     return this._timeInPhase;
   }
 
+  handleUpdate(delta: number): void {
+    this._timeInPhase += delta;
+    if (this._timeInPhase >= this.phaseDuration(this._currentPhase)) {
+      this.endPhase();
+    }
+  }
+
   endPhase(premature: boolean = false): void {
     const newPhase = this.nextPhase(this._currentPhase);
     this._scene.events.emit(
@@ -76,14 +85,5 @@ export default class PhaseController {
     );
     this._currentPhase = newPhase;
     this._timeInPhase = 0;
-  }
-
-  setupEvents(): void {
-    this._scene.events.on('update', (_time: number, delta: number) => {
-      this._timeInPhase += delta;
-      if (this._timeInPhase >= this.phaseDuration(this._currentPhase)) {
-        this.endPhase();
-      }
-    });
   }
 }

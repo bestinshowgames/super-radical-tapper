@@ -3,27 +3,12 @@ import PhaseController, { GamePhase } from './PhaseController';
 
 jest.mock('phaser', () => ({
   __esModule: true,
-  GameObjects: {
-    Container: jest.fn(),
-  },
   Scene: jest.fn().mockImplementation(() => ({
     events: {
       emit: jest.fn(),
-      on: jest.fn().mockImplementation((_event: string, callback: Function) => {
-        callback('R');
-      }),
+      on: jest.fn(),
     },
   })),
-  Input: {
-    Keyboard: {
-      KeyCodes: {
-        D: 0,
-        F: 1,
-        J: 2,
-        K: 3,
-      },
-    },
-  },
 }));
 
 const mockScene = new Scene({});
@@ -33,8 +18,8 @@ describe('PhaseController', () => {
     jest.resetAllMocks();
   });
 
-  describe('endPhase', () => {
-    it('emits a changePhase event, moves the current phase to the next one, and reset the timeInPhase', () => {
+  describe('eventing', () => {
+    it('endPhase emits a changePhase event, moves the current phase to the next one, and reset the timeInPhase', () => {
       const pc = new PhaseController(mockScene);
       pc.currentPhase = GamePhase.PRESENTATION;
       pc.endPhase(false);
@@ -48,7 +33,17 @@ describe('PhaseController', () => {
       expect(pc.timeInPhase).toBe(0);
       expect(pc.currentPhase).toBe(GamePhase.RESPONSE_COLLECTION);
     });
-  });
 
-  // TODO: write unit test for setupEvents
+    it('responds to scene updates and progresses the phase after the phase duration has passed', () => {
+      const pc = new PhaseController(mockScene);
+      jest.spyOn(pc, 'endPhase');
+      pc.currentPhase = GamePhase.DISPLAY_RESULTS;
+
+      pc.handleUpdate(300);
+      expect(pc.endPhase).not.toHaveBeenCalled();
+
+      pc.handleUpdate(300);
+      expect(pc.endPhase).toHaveBeenCalled();
+    });
+  });
 });
