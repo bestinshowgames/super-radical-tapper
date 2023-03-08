@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import CueConfiguration, { HEX } from './CueConfiguration.interface';
+import CueConfiguration, { HEX } from './CueConfiguration';
 
 export enum CueStatus {
   REST,
@@ -12,7 +12,8 @@ export default class Cue extends Phaser.GameObjects.Container {
   scene: Phaser.Scene;
   options: CueConfiguration;
   id: string;
-  private m_status: CueStatus = CueStatus.REST;
+  _key: number;
+  private _status: CueStatus = CueStatus.REST;
 
   baseCircle: Phaser.GameObjects.Arc;
   defaultBaseColor: HEX = '#FF43C2';
@@ -28,6 +29,7 @@ export default class Cue extends Phaser.GameObjects.Container {
     this.scene = scene;
     this.options = options;
     this.id = options.id;
+    this._key = options.key;
     const { x, y } = options;
 
     this.baseCircle = this.createCircle();
@@ -50,6 +52,24 @@ export default class Cue extends Phaser.GameObjects.Container {
       Phaser.Display.Align.In.Center(cueText, this.baseCircle);
     }
 
+    this.options.eventEmitter.on('succeed', () => {
+      if (this.status == CueStatus.HIGHLIGHT) {
+        this.succeed();
+      }
+    });
+
+    this.options.eventEmitter.on('fail', () => {
+      if (this.status == CueStatus.HIGHLIGHT) {
+        this.fail();
+      }
+    });
+
+    this.options.eventEmitter.addListener('reset', () => {
+      if (this.status != CueStatus.REST) {
+        this.rest();
+      }
+    });
+
     this.rest();
   }
 
@@ -58,11 +78,15 @@ export default class Cue extends Phaser.GameObjects.Container {
   }
 
   get status(): CueStatus {
-    return this.m_status;
+    return this._status;
+  }
+
+  get key(): number {
+    return this._key;
   }
 
   private set status(newStatus: CueStatus) {
-    this.m_status = newStatus;
+    this._status = newStatus;
   }
 
   rest() {

@@ -1,0 +1,7 @@
+body {
+  margin: 0;
+}
+@font-face {
+  font-family: Toriko;
+  src: url("/assets/Toriko.ttf");
+}

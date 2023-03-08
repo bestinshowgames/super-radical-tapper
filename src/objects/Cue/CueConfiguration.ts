@@ -1,3 +1,5 @@
+import { Events } from 'phaser';
+
 export type HEX = `#${string}`;
 
 export default interface CueConfiguration {
@@ -10,4 +12,6 @@ export default interface CueConfiguration {
   successColor?: HEX;
   failureColor?: HEX;
   text?: string;
+  key: number;
+  eventEmitter: Events.EventEmitter;
 }
