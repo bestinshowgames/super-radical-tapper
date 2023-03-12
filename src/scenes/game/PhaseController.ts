@@ -81,7 +81,8 @@ export default class PhaseController {
       'changePhase',
       this._currentPhase,
       newPhase,
-      premature
+      premature,
+      this._timeInPhase
     );
     this._currentPhase = newPhase;
     this._timeInPhase = 0;

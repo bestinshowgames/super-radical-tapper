@@ -28,7 +28,8 @@ describe('PhaseController', () => {
         'changePhase',
         GamePhase.PRESENTATION,
         GamePhase.RESPONSE_COLLECTION,
-        false
+        false,
+        0
       );
       expect(pc.timeInPhase).toBe(0);
       expect(pc.currentPhase).toBe(GamePhase.RESPONSE_COLLECTION);

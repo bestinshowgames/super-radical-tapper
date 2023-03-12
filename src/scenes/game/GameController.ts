@@ -14,6 +14,7 @@ export enum GamePhase {
 
 export default class GameController {
   private _score = 0;
+  private _streak = 0;
   private _scene: Scene;
   private _phaseController: PhaseController;
   private _cueGenerator: CueGenerator;
@@ -69,7 +70,12 @@ export default class GameController {
     });
 
     this._scene.events.on('succeed', () => {
+      this.incrementStreak();
       this.incrementScore();
+    });
+
+    this._scene.events.on('fail', () => {
+      this.streak = 0;
     });
   }
 
@@ -81,7 +87,19 @@ export default class GameController {
     this._score = newScore;
   }
 
+  get streak(): number {
+    return this._streak;
+  }
+
+  set streak(newStreak: number) {
+    this._streak = newStreak;
+  }
+
   incrementScore(): void {
-    this._score += 10;
+    this._score += 10 * this.streak;
+  }
+
+  incrementStreak(): void {
+    this._streak++;
   }
 }
