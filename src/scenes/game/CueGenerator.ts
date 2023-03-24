@@ -25,8 +25,6 @@ export default class CueGenerator {
       this._unstructuredPhaseIterator = 0;
       this._inStructuredPhase = true;
     });
-
-    // this.setupEvents();
   }
 
   private buildStructuredPresentationPhase(): string[] {
