@@ -1,3 +1,4 @@
+import { Scene } from 'phaser';
 import CueFacet from './CueFacet';
 
 export default class CueGenerator {
@@ -6,8 +7,11 @@ export default class CueGenerator {
   private _presentationPhaseLength: number;
   private _structuredPresentationPhase: string[];
   private _cueSelector: Generator<string, string, unknown>;
+  private _structuredPhaseIterator = 0;
+  private _unstructuredPhaseIterator = 0;
+  private _inStructuredPhase = true; // TODO: Will need to set this dynamically if we want to change up whether we start with structured or unstructured phase
 
-  constructor(structuredSequence: CueFacet[]) {
+  constructor(structuredSequence: CueFacet[], scene: Scene) {
     this._structuredSequence = structuredSequence.map((facet) => facet.id);
 
     this._presentationPhaseLength =
@@ -16,7 +20,11 @@ export default class CueGenerator {
     this._structuredPresentationPhase = this.buildStructuredPresentationPhase();
     this._cueSelector = this.cueGenerator();
 
-    // this.setupEvents();
+    scene.events.on('restart', () => {
+      this._structuredPhaseIterator = this._inStructuredPhase ? -1 : 0; // -1 is here to account for incidental increment in generator
+      this._unstructuredPhaseIterator = 0;
+      this._inStructuredPhase = true;
+    });
   }
 
   private buildStructuredPresentationPhase(): string[] {
@@ -35,14 +43,28 @@ export default class CueGenerator {
 
   private *cueGenerator(): Generator<string, string, unknown> {
     while (true) {
-      for (const id of this._structuredPresentationPhase) {
-        yield id;
+      while (
+        this._inStructuredPhase &&
+        this._structuredPhaseIterator < this._structuredPresentationPhase.length
+      ) {
+        this._inStructuredPhase = true;
+        yield this._structuredPresentationPhase[this._structuredPhaseIterator];
+        this._structuredPhaseIterator++;
       }
-      let i = 1;
-      while (i <= this._presentationPhaseLength) {
+
+      this._inStructuredPhase = false;
+
+      while (
+        !this._inStructuredPhase &&
+        this._unstructuredPhaseIterator < this.presentationPhaseLength
+      ) {
+        this._inStructuredPhase = false;
         yield this.randomCueId();
-        i++;
+        this._unstructuredPhaseIterator++;
       }
+
+      this._structuredPhaseIterator = 0;
+      this._unstructuredPhaseIterator = 0;
     }
   }
 

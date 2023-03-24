@@ -9,6 +9,7 @@ export default class Game extends Scene {
   private resultText!: GameObjects.Text;
   private scoreText!: GameObjects.Text;
   private streakText!: GameObjects.Text;
+  private healthText!: GameObjects.Text;
   private gm!: GameController;
 
   constructor() {
@@ -21,20 +22,23 @@ export default class Game extends Scene {
     this.gm = new GameController(
       this,
       new PhaseController(this),
-      new CueGenerator([
-        CueFacet.CUE_FACETS[0],
-        CueFacet.CUE_FACETS[1],
-        CueFacet.CUE_FACETS[0],
-        CueFacet.CUE_FACETS[2],
-        CueFacet.CUE_FACETS[3],
-        CueFacet.CUE_FACETS[1],
-        CueFacet.CUE_FACETS[2],
-        CueFacet.CUE_FACETS[0],
-        CueFacet.CUE_FACETS[3],
-        CueFacet.CUE_FACETS[2],
-        CueFacet.CUE_FACETS[1],
-        CueFacet.CUE_FACETS[3],
-      ]),
+      new CueGenerator(
+        [
+          CueFacet.CUE_FACETS[0],
+          CueFacet.CUE_FACETS[1],
+          CueFacet.CUE_FACETS[0],
+          CueFacet.CUE_FACETS[2],
+          CueFacet.CUE_FACETS[3],
+          CueFacet.CUE_FACETS[1],
+          CueFacet.CUE_FACETS[2],
+          CueFacet.CUE_FACETS[0],
+          CueFacet.CUE_FACETS[3],
+          CueFacet.CUE_FACETS[2],
+          CueFacet.CUE_FACETS[1],
+          CueFacet.CUE_FACETS[3],
+        ],
+        this
+      ),
       new CueContainer(this)
     );
 
@@ -57,6 +61,11 @@ export default class Game extends Scene {
       .text(400, 150, this.gm.streak.toString(), { font: '64px Toriko' })
       .setOrigin(0.5);
 
+    this.add.text(700, 100, 'Health:', { font: '64px Toriko' }).setOrigin(0.5);
+    this.healthText = this.add
+      .text(700, 150, this.gm.health.toString(), { font: '64px Toriko' })
+      .setOrigin(0.5);
+
     this.events.on('succeed', () => {
       this.scoreText.setText(this.gm.score.toString());
       this.streakText.setText(this.gm.streak.toString());
@@ -65,6 +74,7 @@ export default class Game extends Scene {
 
     this.events.on('fail', () => {
       this.streakText.setText(this.gm.streak.toString());
+      this.healthText.setText(this.gm.health.toString());
       this.resultText.setText('OUCH!');
     });
 

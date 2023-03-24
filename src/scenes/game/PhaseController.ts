@@ -46,6 +46,11 @@ export default class PhaseController {
     this._scene.events.on('update', (_time: number, delta: number) => {
       this.handleUpdate(delta);
     });
+
+    this._scene.events.on('restart', () => {
+      this._currentPhase = GamePhase.START;
+      this._timeInPhase = 0;
+    });
   }
 
   phaseDuration(gamePhase: GamePhase): number {
