@@ -46,7 +46,7 @@ export default class Cue extends Phaser.GameObjects.Container {
 
     if (options.text) {
       const cueText = this.scene.add.text(x, y, options.text, {
-        font: '28px Toriko',
+        font: '28px Clarity',
       });
       cueText.setStroke('black', 2);
       Phaser.Display.Align.In.Center(cueText, this.baseCircle);

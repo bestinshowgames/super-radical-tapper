@@ -43,27 +43,27 @@ export default class Game extends Scene {
     );
 
     this.add
-      .text(400, 50, 'Super Radical Tapper!', { font: '64px Toriko' })
+      .text(400, 50, 'Super Radical Tapper!', { font: '40px Clarity' })
       .setOrigin(0.5);
 
     this.resultText = this.add
-      .text(400, 200, '', { font: '64px Toriko' })
+      .text(400, 200, '', { font: '32px Clarity' })
       .setOrigin(0.5);
 
     // Score Text with Label
-    this.add.text(100, 100, 'Score:', { font: '64px Toriko' }).setOrigin(0.5);
+    this.add.text(100, 100, 'Score:', { font: '32px Clarity' }).setOrigin(0.5);
     this.scoreText = this.add
-      .text(100, 150, this.gm.score.toString(), { font: '64px Toriko' })
+      .text(100, 150, this.gm.score.toString(), { font: '32px Clarity' })
       .setOrigin(0.5);
 
-    this.add.text(400, 100, 'Streak:', { font: '64px Toriko' }).setOrigin(0.5);
+    this.add.text(400, 100, 'Streak:', { font: '32px Clarity' }).setOrigin(0.5);
     this.streakText = this.add
-      .text(400, 150, this.gm.streak.toString(), { font: '64px Toriko' })
+      .text(400, 150, this.gm.streak.toString(), { font: '32px Clarity' })
       .setOrigin(0.5);
 
-    this.add.text(700, 100, 'Health:', { font: '64px Toriko' }).setOrigin(0.5);
+    this.add.text(700, 100, 'Health:', { font: '32px Clarity' }).setOrigin(0.5);
     this.healthText = this.add
-      .text(700, 150, this.gm.health.toString(), { font: '64px Toriko' })
+      .text(700, 150, this.gm.health.toString(), { font: '32px Clarity' })
       .setOrigin(0.5);
 
     this.events.on('succeed', () => {
