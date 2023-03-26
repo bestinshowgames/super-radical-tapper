@@ -1,4 +1,4 @@
-import { Scene } from 'phaser';
+import eventsCenter from './EventsCenter';
 
 export enum GamePhase {
   START,
@@ -9,14 +9,12 @@ export enum GamePhase {
 }
 
 export default class PhaseController {
-  private _scene: Scene;
   private _phaseConfiguration: { [key in GamePhase]: any };
   private _currentPhase: GamePhase;
   private _timeInPhase: number = 0;
+  private _gameOver: boolean = false;
 
-  constructor(scene: Scene) {
-    this._scene = scene;
-
+  constructor() {
     // TODO: Make this configurable/changeable
     this._phaseConfiguration = {
       [GamePhase.START]: {
@@ -43,13 +41,20 @@ export default class PhaseController {
 
     this._currentPhase = GamePhase.START;
 
-    this._scene.events.on('update', (_time: number, delta: number) => {
-      this.handleUpdate(delta);
+    eventsCenter.on('update', (_time: number, delta: number) => {
+      if (!this._gameOver) {
+        this.handleUpdate(delta);
+      }
     });
 
-    this._scene.events.on('restart', () => {
+    eventsCenter.on('restart', () => {
       this._currentPhase = GamePhase.START;
       this._timeInPhase = 0;
+      this._gameOver = false;
+    });
+
+    eventsCenter.on('gameOver', () => {
+      this._gameOver = true;
     });
   }
 
@@ -73,6 +78,10 @@ export default class PhaseController {
     return this._timeInPhase;
   }
 
+  set timeInPhase(timeInPhase: number) {
+    this._timeInPhase = timeInPhase;
+  }
+
   handleUpdate(delta: number): void {
     this._timeInPhase += delta;
     if (this._timeInPhase >= this.phaseDuration(this._currentPhase)) {
@@ -82,7 +91,7 @@ export default class PhaseController {
 
   endPhase(premature: boolean = false): void {
     const newPhase = this.nextPhase(this._currentPhase);
-    this._scene.events.emit(
+    eventsCenter.emit(
       'changePhase',
       this._currentPhase,
       newPhase,
