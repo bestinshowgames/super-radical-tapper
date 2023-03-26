@@ -1,15 +1,13 @@
-import { Scene } from 'phaser';
 import CueFacet from './CueFacet';
 import CueGenerator from './CueGenerator';
 
+jest.mock('./EventsCenter', () => ({
+  emit: jest.fn(),
+  on: jest.fn(),
+}));
+
 jest.mock('phaser', () => ({
   __esModule: true,
-  Scene: jest.fn().mockImplementation(() => ({
-    events: {
-      emit: jest.fn(),
-      on: jest.fn(),
-    },
-  })),
   Input: {
     Keyboard: {
       KeyCodes: {
@@ -21,8 +19,6 @@ jest.mock('phaser', () => ({
     },
   },
 }));
-
-const mockScene = new Scene({});
 
 describe('CueGenerator', () => {
   describe('nextCue', () => {
@@ -36,7 +32,7 @@ describe('CueGenerator', () => {
         CueFacet.CUE_FACETS[3],
         CueFacet.CUE_FACETS[2],
       ];
-      const generator = new CueGenerator(mockSequence, mockScene);
+      const generator = new CueGenerator(mockSequence);
       jest.spyOn(generator, 'randomCueId').mockReturnValue('FOO');
 
       [...Array(generator.sequenceIterations)].forEach(() => {

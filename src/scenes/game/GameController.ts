@@ -1,8 +1,12 @@
-import { Scene } from 'phaser';
+import eventsCenter from './EventsCenter';
 import CueContainer from './CueContainer';
 import CueGenerator from './CueGenerator';
 import PhaseController from './PhaseController';
-import InputMediator, { InputEvents } from './InputMediator';
+import { InputEvents } from './InputMediator';
+
+const STARTING_HEALTH = 10;
+const STARTING_STREAK = 0;
+const STARTING_SCORE = 0;
 
 export enum GamePhase {
   START,
@@ -13,37 +17,24 @@ export enum GamePhase {
 }
 
 export default class GameController {
-  private _score = 0;
-  private _streak = 0;
-  private _health = 10;
-  private _scene: Scene;
+  private _score = STARTING_SCORE;
+  private _streak = STARTING_STREAK;
+  private _health = STARTING_HEALTH;
   private _phaseController: PhaseController;
   private _cueGenerator: CueGenerator;
-  private _cueContainer: CueContainer;
+  private _cueContainer!: CueContainer;
 
-  constructor(
-    scene: Scene,
-    phaseController: PhaseController,
-    cueGenerator: CueGenerator,
-    cueContainer: CueContainer
-  ) {
-    this._scene = scene;
+  constructor(phaseController: PhaseController, cueGenerator: CueGenerator) {
     this._phaseController = phaseController;
     this._cueGenerator = cueGenerator;
-    this._cueContainer = cueContainer;
-
-    InputMediator.mediateKeyboardStream(
-      this._scene.input.keyboard,
-      this._scene.events
-    );
 
     // TODO: The awkward part here is that CueContainer holds rendering info, which we want to de-couple from the game logic. See if that can be moved elsewhere
-    this._scene.events.on('input', (event: InputEvents, data: any) => {
+    eventsCenter.on('input', (event: InputEvents, data: any) => {
       if (
         event == InputEvents.CUE_INPUT &&
         this._phaseController.currentPhase == GamePhase.RESPONSE_COLLECTION
       ) {
-        this._scene.events.emit(
+        eventsCenter.emit(
           'displayResults',
           data.id === this._cueContainer.highlightedCueId
         );
@@ -51,43 +42,43 @@ export default class GameController {
       }
     });
 
-    this._scene.events.on(
+    eventsCenter.on(
       'changePhase',
       (currentPhase: GamePhase, newPhase: GamePhase, premature: boolean) => {
         if (currentPhase === GamePhase.RESPONSE_COLLECTION && !premature) {
-          this._scene.events.emit('displayResults', false);
+          eventsCenter.emit('displayResults', false);
         } else if (newPhase === GamePhase.WAIT) {
-          this._scene.events.emit('reset');
+          eventsCenter.emit('reset');
         } else if (newPhase === GamePhase.PRESENTATION) {
-          this._scene.events.emit('presentCue', this._cueGenerator.nextCue);
+          eventsCenter.emit('presentCue', this._cueGenerator.nextCue);
         }
       }
     );
 
-    this._scene.events.on('displayResults', (correct: boolean) => {
-      correct
-        ? this._scene.events.emit('succeed')
-        : this._scene.events.emit('fail');
+    eventsCenter.on('displayResults', (correct: boolean) => {
+      correct ? eventsCenter.emit('succeed') : eventsCenter.emit('fail');
     });
 
-    this._scene.events.on('succeed', () => {
+    eventsCenter.on('succeed', () => {
       this.incrementStreak();
       this.incrementScore();
     });
 
-    this._scene.events.on('fail', () => {
+    eventsCenter.on('fail', () => {
       this.streak = 0;
       this.decrementHealth();
       if (this.health <= 0) {
-        this._scene.events.emit('restart');
+        eventsCenter.emit('gameOver');
       }
     });
 
-    this._scene.events.on('restart', () => {
-      this.score = 0;
-      this.streak = 0;
-      this.health = 10;
+    eventsCenter.on('restart', () => {
+      this.reset();
     });
+  }
+
+  set cueContainer(cueContainer: CueContainer) {
+    this._cueContainer = cueContainer;
   }
 
   get score(): number {
@@ -124,5 +115,11 @@ export default class GameController {
 
   decrementHealth(): void {
     this._health--;
+  }
+
+  reset(): void {
+    this._score = STARTING_SCORE;
+    this._streak = STARTING_STREAK;
+    this._health = STARTING_HEALTH;
   }
 }

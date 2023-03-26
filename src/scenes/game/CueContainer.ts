@@ -1,4 +1,5 @@
 import { GameObjects, Scene } from 'phaser';
+import eventsCenter from './EventsCenter';
 import { Cue } from '../../objects';
 import CueFacet from './CueFacet';
 
@@ -18,7 +19,7 @@ export default class CueContainer extends GameObjects.Container {
       radius: 50,
       text: 'D',
       key: CueFacet.CUE_FACETS[0].key,
-      eventEmitter: this.scene.events,
+      eventEmitter: eventsCenter,
     });
 
     this.cues[CueFacet.CUE_FACETS[1].id] = new Cue(this.scene, {
@@ -28,7 +29,7 @@ export default class CueContainer extends GameObjects.Container {
       radius: 50,
       text: 'F',
       key: CueFacet.CUE_FACETS[1].key,
-      eventEmitter: this.scene.events,
+      eventEmitter: eventsCenter,
     });
 
     this.cues[CueFacet.CUE_FACETS[2].id] = new Cue(this.scene, {
@@ -38,7 +39,7 @@ export default class CueContainer extends GameObjects.Container {
       radius: 50,
       text: 'J',
       key: CueFacet.CUE_FACETS[2].key,
-      eventEmitter: this.scene.events,
+      eventEmitter: eventsCenter,
     });
 
     this.cues[CueFacet.CUE_FACETS[3].id] = new Cue(this.scene, {
@@ -48,16 +49,20 @@ export default class CueContainer extends GameObjects.Container {
       radius: 50,
       text: 'K',
       key: CueFacet.CUE_FACETS[3].key,
-      eventEmitter: this.scene.events,
+      eventEmitter: eventsCenter,
     });
 
-    this.scene.events.on('presentCue', (cueKey: string) => {
-      // Reset the cues
-      this.scene.events.emit('reset');
-      // Change the highlighted cue
-      this.highlightedCue = this.cues[cueKey];
-      this.highlightedCue.highlight();
+    eventsCenter.on('presentCue', (cueKey: string) => {
+      this.presentCue(cueKey);
     });
+  }
+
+  presentCue(cueKey: string) {
+    // first - reset any cues
+    eventsCenter.emit('reset');
+    // Change the highlighted cue
+    this.highlightedCue = this.cues[cueKey];
+    this.highlightedCue.highlight();
   }
 
   get highlightedCueId(): string {

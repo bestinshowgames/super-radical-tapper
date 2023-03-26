@@ -1,4 +1,4 @@
-import { Scene } from 'phaser';
+import eventsCenter from './EventsCenter';
 import CueFacet from './CueFacet';
 
 export default class CueGenerator {
@@ -11,7 +11,7 @@ export default class CueGenerator {
   private _unstructuredPhaseIterator = 0;
   private _inStructuredPhase = true; // TODO: Will need to set this dynamically if we want to change up whether we start with structured or unstructured phase
 
-  constructor(structuredSequence: CueFacet[], scene: Scene) {
+  constructor(structuredSequence: CueFacet[]) {
     this._structuredSequence = structuredSequence.map((facet) => facet.id);
 
     this._presentationPhaseLength =
@@ -20,7 +20,7 @@ export default class CueGenerator {
     this._structuredPresentationPhase = this.buildStructuredPresentationPhase();
     this._cueSelector = this.cueGenerator();
 
-    scene.events.on('restart', () => {
+    eventsCenter.on('restart', () => {
       this._structuredPhaseIterator = this._inStructuredPhase ? -1 : 0; // -1 is here to account for incidental increment in generator
       this._unstructuredPhaseIterator = 0;
       this._inStructuredPhase = true;
