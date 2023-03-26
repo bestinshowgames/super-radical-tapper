@@ -48,9 +48,7 @@ export default class PhaseController {
     });
 
     eventsCenter.on('restart', () => {
-      this._currentPhase = GamePhase.START;
-      this._timeInPhase = 0;
-      this._gameOver = false;
+      this.reset();
     });
 
     eventsCenter.on('gameOver', () => {
@@ -82,6 +80,14 @@ export default class PhaseController {
     this._timeInPhase = timeInPhase;
   }
 
+  set gameOver(gameOver: boolean) {
+    this._gameOver = gameOver;
+  }
+
+  get gameOver(): boolean {
+    return this._gameOver;
+  }
+
   handleUpdate(delta: number): void {
     this._timeInPhase += delta;
     if (this._timeInPhase >= this.phaseDuration(this._currentPhase)) {
@@ -100,5 +106,11 @@ export default class PhaseController {
     );
     this._currentPhase = newPhase;
     this._timeInPhase = 0;
+  }
+
+  reset() {
+    this._currentPhase = GamePhase.START;
+    this._timeInPhase = 0;
+    this._gameOver = false;
   }
 }

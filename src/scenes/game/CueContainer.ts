@@ -53,12 +53,16 @@ export default class CueContainer extends GameObjects.Container {
     });
 
     eventsCenter.on('presentCue', (cueKey: string) => {
-      // Reset the cues
-      eventsCenter.emit('reset');
-      // Change the highlighted cue
-      this.highlightedCue = this.cues[cueKey];
-      this.highlightedCue.highlight();
+      this.presentCue(cueKey);
     });
+  }
+
+  presentCue(cueKey: string) {
+    // first - reset any cues
+    eventsCenter.emit('reset');
+    // Change the highlighted cue
+    this.highlightedCue = this.cues[cueKey];
+    this.highlightedCue.highlight();
   }
 
   get highlightedCueId(): string {

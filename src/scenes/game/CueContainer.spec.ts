@@ -1,19 +1,18 @@
 import { Input, Scene } from 'phaser';
 import CueContainer from './CueContainer';
+import eventsCenter from './EventsCenter';
+
+jest.mock('./EventsCenter', () => ({
+  emit: jest.fn(),
+  on: jest.fn(),
+}));
 
 jest.mock('phaser', () => ({
   __esModule: true,
   GameObjects: {
     Container: jest.fn(),
   },
-  Scene: jest.fn().mockImplementation(() => ({
-    events: {
-      emit: jest.fn(),
-      on: jest.fn().mockImplementation((_event: string, callback: Function) => {
-        callback('R');
-      }),
-    },
-  })),
+  Scene: jest.fn(),
   Input: {
     Keyboard: {
       KeyCodes: {
@@ -38,17 +37,11 @@ const mockScene = new Scene({});
 
 describe('CueContainer', () => {
   describe('event listening', () => {
-    it('emits a reset event in response to a presentCue event', () => {
-      new CueContainer(mockScene);
-      mockScene.events.emit('presentCue');
-
-      expect(mockScene.events.emit).toHaveBeenCalledWith('reset');
-    });
-
-    it('sets the highlighted cue to the provided cue key and highlights it', () => {
+    it('resets the field, then highlights the cue for the provided key', () => {
       const container = new CueContainer(mockScene);
-      mockScene.events.emit('presentCue');
+      container.presentCue('R');
 
+      expect(eventsCenter.emit).toHaveBeenCalledWith('reset');
       expect(container.highlightedCue.id).toEqual('R');
       expect(container.highlightedCue.highlight).toHaveBeenCalled();
     });

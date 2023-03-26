@@ -4,6 +4,10 @@ import CueGenerator from './CueGenerator';
 import PhaseController from './PhaseController';
 import { InputEvents } from './InputMediator';
 
+const STARTING_HEALTH = 10;
+const STARTING_STREAK = 0;
+const STARTING_SCORE = 0;
+
 export enum GamePhase {
   START,
   PRESENTATION,
@@ -13,9 +17,9 @@ export enum GamePhase {
 }
 
 export default class GameController {
-  private _score = 0;
-  private _streak = 0;
-  private _health = 10;
+  private _score = STARTING_SCORE;
+  private _streak = STARTING_STREAK;
+  private _health = STARTING_HEALTH;
   private _phaseController: PhaseController;
   private _cueGenerator: CueGenerator;
   private _cueContainer!: CueContainer;
@@ -114,8 +118,8 @@ export default class GameController {
   }
 
   reset(): void {
-    this._score = 0;
-    this._streak = 0;
-    this._health = 3;
+    this._score = STARTING_SCORE;
+    this._streak = STARTING_STREAK;
+    this._health = STARTING_HEALTH;
   }
 }

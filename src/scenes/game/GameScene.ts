@@ -18,23 +18,20 @@ export default class Game extends Scene {
     super('Game');
     this.gm = new GameController(
       new PhaseController(),
-      new CueGenerator(
-        [
-          CueFacet.CUE_FACETS[0],
-          CueFacet.CUE_FACETS[1],
-          CueFacet.CUE_FACETS[0],
-          CueFacet.CUE_FACETS[2],
-          CueFacet.CUE_FACETS[3],
-          CueFacet.CUE_FACETS[1],
-          CueFacet.CUE_FACETS[2],
-          CueFacet.CUE_FACETS[0],
-          CueFacet.CUE_FACETS[3],
-          CueFacet.CUE_FACETS[2],
-          CueFacet.CUE_FACETS[1],
-          CueFacet.CUE_FACETS[3],
-        ],
-        this
-      )
+      new CueGenerator([
+        CueFacet.CUE_FACETS[0],
+        CueFacet.CUE_FACETS[1],
+        CueFacet.CUE_FACETS[0],
+        CueFacet.CUE_FACETS[2],
+        CueFacet.CUE_FACETS[3],
+        CueFacet.CUE_FACETS[1],
+        CueFacet.CUE_FACETS[2],
+        CueFacet.CUE_FACETS[0],
+        CueFacet.CUE_FACETS[3],
+        CueFacet.CUE_FACETS[2],
+        CueFacet.CUE_FACETS[1],
+        CueFacet.CUE_FACETS[3],
+      ])
     );
   }
 
