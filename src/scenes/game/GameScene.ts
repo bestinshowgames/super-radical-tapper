@@ -90,6 +90,8 @@ export default class Game extends Scene {
     eventsCenter.on('gameOver', () => {
       this.scene.start('End', {
         score: this.gm.score,
+        longestStreak: this.gm.longestStreak,
+        totalHits: this.gm.totalHits,
       });
     });
   }
