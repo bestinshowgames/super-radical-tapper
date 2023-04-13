@@ -21,6 +21,7 @@ export default class GameController {
   private _streak = STARTING_STREAK;
   private _health = STARTING_HEALTH;
   private _longestStreak = STARTING_STREAK;
+  private _totalHits = STARTING_STREAK;
   private _phaseController: PhaseController;
   private _cueGenerator: CueGenerator;
   private _cueContainer!: CueContainer;
@@ -110,6 +111,10 @@ export default class GameController {
     return this._longestStreak;
   }
 
+  get totalHits(): number {
+    return this._totalHits;
+  }
+
   incrementScore(): void {
     this._score += 10 * this.streak;
   }
@@ -119,6 +124,7 @@ export default class GameController {
     if (this._streak > this._longestStreak) {
       this._longestStreak = this._streak;
     }
+    this._totalHits++;
   }
 
   decrementHealth(): void {
@@ -129,6 +135,7 @@ export default class GameController {
     this._score = STARTING_SCORE;
     this._streak = STARTING_STREAK;
     this._longestStreak = STARTING_STREAK;
+    this._totalHits = STARTING_STREAK;
     this._health = STARTING_HEALTH;
   }
 }

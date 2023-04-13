@@ -3,6 +3,7 @@ import { Scene } from 'phaser';
 export default class End extends Scene {
   private score: number = 0;
   private longestStreak: number = 0;
+  private totalHits: number = 0;
   constructor() {
     super('End');
   }
@@ -10,6 +11,7 @@ export default class End extends Scene {
   init(data: any) {
     this.score = data.score;
     this.longestStreak = data.longestStreak;
+    this.totalHits = data.totalHits;
   }
 
   create() {
@@ -28,7 +30,13 @@ export default class End extends Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(400, 250, `Longest Streak: ${this.longestStreak.toString()}`, {
+      .text(400, 250, `Total Hits: ${this.totalHits.toString()}`, {
+        font: '32px Clarity',
+      })
+      .setOrigin(0.5);
+
+    this.add
+      .text(400, 300, `Longest Streak: ${this.longestStreak.toString()}`, {
         font: '32px Clarity',
       })
       .setOrigin(0.5);

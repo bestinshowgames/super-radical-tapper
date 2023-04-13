@@ -91,6 +91,7 @@ export default class Game extends Scene {
       this.scene.start('End', {
         score: this.gm.score,
         longestStreak: this.gm.longestStreak,
+        totalHits: this.gm.totalHits,
       });
     });
   }
