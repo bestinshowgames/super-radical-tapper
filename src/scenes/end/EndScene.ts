@@ -44,8 +44,10 @@ export default class End extends Scene {
     const restart = this.add
       .text(400, 400, 'Restart', {
         font: '32px Clarity',
+        backgroundColor: 'black',
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5, 0.5)
+      .setInteractive({ useHandCursor: true });
 
     restart.setInteractive().on('pointerup', () => {
       this.scene.start('Game', { restart: true });

@@ -35,7 +35,12 @@ export default class Game extends Scene {
     );
   }
 
-  preload() {}
+  preload() {
+    this.load.spritesheet('creatures', 'assets/sprites/Creatures-no-bg.png', {
+      frameWidth: 10,
+      frameHeight: 10,
+    });
+  }
 
   init(data: any) {
     if (data && data.restart) {
@@ -74,13 +79,15 @@ export default class Game extends Scene {
     eventsCenter.on('succeed', () => {
       this.scoreText.setText(this.gm.score.toString());
       this.streakText.setText(this.gm.streak.toString());
-      this.resultText.setText('SCORE!');
+      // this.resultText.setText('SCORE!');
+      this.cameras.main.shake(100, 0.005);
     });
 
     eventsCenter.on('fail', () => {
       this.streakText.setText(this.gm.streak.toString());
       this.healthText.setText(this.gm.health.toString());
-      this.resultText.setText('OUCH!');
+      // this.resultText.setText('OUCH!');
+      this.cameras.main.shake(100, 0.005);
     });
 
     eventsCenter.on('reset', () => {
