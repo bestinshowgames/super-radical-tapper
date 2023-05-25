@@ -1,4 +1,4 @@
-import { Scene, GameObjects } from 'phaser';
+import { Scene, GameObjects, Sound } from 'phaser';
 import eventsCenter from './EventsCenter';
 import InputMediator from './InputMediator';
 import GameController from './GameController';
@@ -12,6 +12,8 @@ export default class Game extends Scene {
   private scoreText!: GameObjects.Text;
   private streakText!: GameObjects.Text;
   private healthText!: GameObjects.Text;
+  private enterSound!: Sound.BaseSound;
+  private failSound!: Sound.BaseSound;
   private gm!: GameController;
 
   constructor() {
@@ -40,6 +42,9 @@ export default class Game extends Scene {
       frameWidth: 10,
       frameHeight: 10,
     });
+    this.load.image('background', 'assets/sprites/SRT Background 2.png');
+    this.load.audio('enter', 'assets/sounds/Teleport.mp3');
+    this.load.audio('fail', 'assets/sounds/Starpower.mp3');
   }
 
   init(data: any) {
@@ -50,33 +55,49 @@ export default class Game extends Scene {
   }
 
   create() {
+    let { width, height } = this.sys.game.config;
+    // Force conversion to int just to keep the parser happy
+    width = +width;
+    height = +height;
+    this.add
+      .image(width / 2, height / 2, 'background')
+      .setScale(2, 2)
+      .setOrigin(0.5);
     this.gm.cueContainer = new CueContainer(this);
 
     this.add
-      .text(400, 50, 'Super Radical Tapper!', { font: '40px Clarity' })
+      .text(384, 75, 'Super Radical Tapper!', { font: '40px Clarity' })
       .setOrigin(0.5);
 
     this.resultText = this.add
-      .text(400, 200, '', { font: '32px Clarity' })
+      .text(384, 250, '', { font: '32px Clarity' })
       .setOrigin(0.5);
 
     // Score Text with Label
-    this.add.text(100, 100, 'Score:', { font: '32px Clarity' }).setOrigin(0.5);
+    this.add.text(128, 150, 'Score:', { font: '32px Clarity' }).setOrigin(0.5);
     this.scoreText = this.add
-      .text(100, 150, this.gm.score.toString(), { font: '32px Clarity' })
+      .text(128, 200, this.gm.score.toString(), { font: '32px Clarity' })
       .setOrigin(0.5);
 
-    this.add.text(400, 100, 'Streak:', { font: '32px Clarity' }).setOrigin(0.5);
+    this.add.text(384, 150, 'Streak:', { font: '32px Clarity' }).setOrigin(0.5);
     this.streakText = this.add
-      .text(400, 150, this.gm.streak.toString(), { font: '32px Clarity' })
+      .text(384, 200, this.gm.streak.toString(), { font: '32px Clarity' })
       .setOrigin(0.5);
 
-    this.add.text(700, 100, 'Health:', { font: '32px Clarity' }).setOrigin(0.5);
+    this.add.text(640, 150, 'Health:', { font: '32px Clarity' }).setOrigin(0.5);
     this.healthText = this.add
-      .text(700, 150, this.gm.health.toString(), { font: '32px Clarity' })
+      .text(640, 200, this.gm.health.toString(), { font: '32px Clarity' })
       .setOrigin(0.5);
+
+    this.enterSound = this.sound.add('enter');
+    this.failSound = this.sound.add('fail');
+
+    eventsCenter.on('presentCue', () => {
+      this.enterSound.play();
+    });
 
     eventsCenter.on('succeed', () => {
+      this.enterSound.stop();
       this.scoreText.setText(this.gm.score.toString());
       this.streakText.setText(this.gm.streak.toString());
       // this.resultText.setText('SCORE!');
@@ -84,14 +105,16 @@ export default class Game extends Scene {
     });
 
     eventsCenter.on('fail', () => {
+      this.enterSound.stop();
+      this.failSound.play();
       this.streakText.setText(this.gm.streak.toString());
       this.healthText.setText(this.gm.health.toString());
-      // this.resultText.setText('OUCH!');
       this.cameras.main.shake(100, 0.005);
     });
 
     eventsCenter.on('reset', () => {
       this.resultText.setText('');
+      this.failSound.stop();
     });
 
     eventsCenter.on('gameOver', () => {
