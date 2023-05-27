@@ -14,6 +14,7 @@ export default class Game extends Scene {
   private healthText!: GameObjects.Text;
   private enterSound!: Sound.BaseSound;
   private failSound!: Sound.BaseSound;
+  private succeedSound!: Sound.BaseSound;
   private gm!: GameController;
 
   constructor() {
@@ -45,6 +46,7 @@ export default class Game extends Scene {
     this.load.image('background', 'assets/sprites/SRT Background 2.png');
     this.load.audio('enter', 'assets/sounds/Teleport.mp3');
     this.load.audio('fail', 'assets/sounds/Starpower.mp3');
+    this.load.audio('hit', 'assets/sounds/Hit 2.mp3');
   }
 
   init(data: any) {
@@ -89,8 +91,13 @@ export default class Game extends Scene {
       .text(640, 200, this.gm.health.toString(), { font: '32px Clarity' })
       .setOrigin(0.5);
 
-    this.enterSound = this.sound.add('enter');
-    this.failSound = this.sound.add('fail');
+    this.enterSound = this.sound.add('enter', {
+      rate: 2,
+    });
+    this.failSound = this.sound.add('fail', {
+      rate: 2,
+    });
+    this.succeedSound = this.sound.add('hit', { rate: 2 });
 
     eventsCenter.on('presentCue', () => {
       this.enterSound.play();
@@ -98,6 +105,7 @@ export default class Game extends Scene {
 
     eventsCenter.on('succeed', () => {
       this.enterSound.stop();
+      this.succeedSound.play();
       this.scoreText.setText(this.gm.score.toString());
       this.streakText.setText(this.gm.streak.toString());
       // this.resultText.setText('SCORE!');
@@ -115,6 +123,7 @@ export default class Game extends Scene {
     eventsCenter.on('reset', () => {
       this.resultText.setText('');
       this.failSound.stop();
+      this.succeedSound.stop();
     });
 
     eventsCenter.on('gameOver', () => {
