@@ -15,6 +15,7 @@ export default class Game extends Scene {
   private enterSound!: Sound.BaseSound;
   private failSound!: Sound.BaseSound;
   private succeedSound!: Sound.BaseSound;
+  private backgroundMusic!: Sound.BaseSound;
   private gm!: GameController;
 
   constructor() {
@@ -47,6 +48,7 @@ export default class Game extends Scene {
     this.load.audio('enter', 'assets/sounds/Teleport.mp3');
     this.load.audio('fail', 'assets/sounds/Starpower.mp3');
     this.load.audio('hit', 'assets/sounds/Hit 2.mp3');
+    this.load.audio('music', 'assets/sounds/Dark Dragon.ogg');
   }
 
   init(data: any) {
@@ -98,6 +100,14 @@ export default class Game extends Scene {
       rate: 2,
     });
     this.succeedSound = this.sound.add('hit', { rate: 2 });
+
+    this.backgroundMusic =
+      this.backgroundMusic ??
+      this.sound.add('music', { loop: true, volume: 0.5 });
+
+    if (!this.backgroundMusic.isPlaying) {
+      this.backgroundMusic.play();
+    }
 
     eventsCenter.on('presentCue', () => {
       this.enterSound.play();
