@@ -23,6 +23,9 @@ export default class Cue extends Phaser.GameObjects.Container {
   defaultSuccessColor: HEX = '#43FF63';
   failedCircle: Phaser.GameObjects.Arc;
   defaultFailureColor: HEX = '#FF4343';
+  edgar: Phaser.GameObjects.Image;
+  radical: Phaser.GameObjects.Image;
+  cueText?: Phaser.GameObjects.Text;
 
   constructor(scene: Phaser.Scene, options: CueConfiguration) {
     super(scene, options.x, options.y);
@@ -44,12 +47,22 @@ export default class Cue extends Phaser.GameObjects.Container {
     this.failedCircle = this.createCircle('failure');
     this.scene.add.existing(this.failedCircle);
 
+    this.edgar = this.scene.add
+      .image(this.options.x, this.options.y, 'creatures', 32)
+      .setScale(4, 4)
+      .setActive(false);
+    this.radical = this.scene.add
+      .image(this.options.x, this.options.y, 'creatures', 38)
+      .setScale(4, 4)
+      .setTint(0x43ff63, 0x00ff00, 0x00ff00, 0x43ff63)
+      .setActive(false);
+
     if (options.text) {
-      const cueText = this.scene.add.text(x, y, options.text, {
+      this.cueText = this.scene.add.text(x, y, options.text, {
         font: '28px Clarity',
       });
-      cueText.setStroke('black', 2);
-      Phaser.Display.Align.In.Center(cueText, this.baseCircle);
+      this.cueText.setStroke('black', 2);
+      Phaser.Display.Align.In.Center(this.cueText, this.baseCircle);
     }
 
     this.options.eventEmitter.on('succeed', () => {
@@ -104,12 +117,16 @@ export default class Cue extends Phaser.GameObjects.Container {
   succeed() {
     this.reset();
     this.succeededCircle.setVisible(true);
+    this.edgar.setVisible(true);
+    this.cueText?.setVisible(false);
     this.status = CueStatus.SUCCEED;
   }
 
   fail() {
     this.reset();
     this.failedCircle.setVisible(true);
+    this.radical.setVisible(true);
+    this.cueText?.setVisible(false);
     this.status = CueStatus.FAIL;
   }
 
@@ -118,6 +135,9 @@ export default class Cue extends Phaser.GameObjects.Container {
     this.highlightedCircle.setVisible(false);
     this.succeededCircle.setVisible(false);
     this.failedCircle.setVisible(false);
+    this.edgar.setVisible(false);
+    this.radical.setVisible(false);
+    this.cueText?.setVisible(true);
   }
 
   createCircle(type?: string) {

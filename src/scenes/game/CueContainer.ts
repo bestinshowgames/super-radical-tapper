@@ -14,8 +14,8 @@ export default class CueContainer extends GameObjects.Container {
 
     this.cues[CueFacet.CUE_FACETS[0].id] = new Cue(this.scene, {
       id: CueFacet.CUE_FACETS[0].id,
-      x: 160,
-      y: 300,
+      x: 153,
+      y: 330,
       radius: 50,
       text: 'D',
       key: CueFacet.CUE_FACETS[0].key,
@@ -24,8 +24,8 @@ export default class CueContainer extends GameObjects.Container {
 
     this.cues[CueFacet.CUE_FACETS[1].id] = new Cue(this.scene, {
       id: CueFacet.CUE_FACETS[1].id,
-      x: 320,
-      y: 300,
+      x: 307,
+      y: 330,
       radius: 50,
       text: 'F',
       key: CueFacet.CUE_FACETS[1].key,
@@ -34,8 +34,8 @@ export default class CueContainer extends GameObjects.Container {
 
     this.cues[CueFacet.CUE_FACETS[2].id] = new Cue(this.scene, {
       id: CueFacet.CUE_FACETS[2].id,
-      x: 480,
-      y: 300,
+      x: 461,
+      y: 330,
       radius: 50,
       text: 'J',
       key: CueFacet.CUE_FACETS[2].key,
@@ -44,8 +44,8 @@ export default class CueContainer extends GameObjects.Container {
 
     this.cues[CueFacet.CUE_FACETS[3].id] = new Cue(this.scene, {
       id: CueFacet.CUE_FACETS[3].id,
-      x: 640,
-      y: 300,
+      x: 614,
+      y: 330,
       radius: 50,
       text: 'K',
       key: CueFacet.CUE_FACETS[3].key,
