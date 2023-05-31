@@ -18,6 +18,8 @@ export default class Game extends Scene {
   private backgroundMusic!: Sound.BaseSound;
   private gm!: GameController;
 
+  private set: boolean = false;
+
   constructor() {
     super('Game');
     this.gm = new GameController(
@@ -39,110 +41,108 @@ export default class Game extends Scene {
     );
   }
 
-  preload() {
-    this.load.spritesheet('creatures', 'assets/sprites/Creatures-no-bg.png', {
-      frameWidth: 10,
-      frameHeight: 10,
-    });
-    this.load.image('background', 'assets/sprites/SRT Background 2.png');
-    this.load.audio('enter', 'assets/sounds/Teleport.mp3');
-    this.load.audio('fail', 'assets/sounds/Starpower.mp3');
-    this.load.audio('hit', 'assets/sounds/Hit 2.mp3');
-    this.load.audio('music', 'assets/sounds/Dark Dragon.ogg');
-  }
-
   init(data: any) {
     if (data && data.restart) {
       eventsCenter.emit('restart');
+      this.set = false;
     }
     InputMediator.mediateKeyboardStream(this.input.keyboard);
   }
 
   create() {
-    let { width, height } = this.sys.game.config;
-    // Force conversion to int just to keep the parser happy
-    width = +width;
-    height = +height;
-    this.add
-      .image(width / 2, height / 2, 'background')
-      .setScale(2, 2)
-      .setOrigin(0.5);
-    this.gm.cueContainer = new CueContainer(this);
+    if (!this.set) {
+      let { width, height } = this.sys.game.config;
+      // Force conversion to int just to keep the parser happy
+      width = +width;
+      height = +height;
+      this.add
+        .image(width / 2, height / 2, 'background')
+        .setScale(2, 2)
+        .setOrigin(0.5);
+      this.gm.cueContainer = new CueContainer(this);
 
-    this.add
-      .text(384, 75, 'Super Radical Tapper!', { font: '40px Clarity' })
-      .setOrigin(0.5);
+      this.add
+        .text(384, 75, 'Super Radical Tapper!', { font: '40px Clarity' })
+        .setOrigin(0.5);
 
-    this.resultText = this.add
-      .text(384, 250, '', { font: '32px Clarity' })
-      .setOrigin(0.5);
+      this.resultText = this.add
+        .text(384, 250, '', { font: '32px Clarity' })
+        .setOrigin(0.5);
 
-    // Score Text with Label
-    this.add.text(128, 150, 'Score:', { font: '32px Clarity' }).setOrigin(0.5);
-    this.scoreText = this.add
-      .text(128, 200, this.gm.score.toString(), { font: '32px Clarity' })
-      .setOrigin(0.5);
+      // Score Text with Label
+      this.add
+        .text(128, 150, 'Score:', { font: '32px Clarity' })
+        .setOrigin(0.5);
+      this.scoreText = this.add
+        .text(128, 200, this.gm.score.toString(), { font: '32px Clarity' })
+        .setOrigin(0.5);
 
-    this.add.text(384, 150, 'Streak:', { font: '32px Clarity' }).setOrigin(0.5);
-    this.streakText = this.add
-      .text(384, 200, this.gm.streak.toString(), { font: '32px Clarity' })
-      .setOrigin(0.5);
+      this.add
+        .text(384, 150, 'Streak:', { font: '32px Clarity' })
+        .setOrigin(0.5);
+      this.streakText = this.add
+        .text(384, 200, this.gm.streak.toString(), { font: '32px Clarity' })
+        .setOrigin(0.5);
 
-    this.add.text(640, 150, 'Health:', { font: '32px Clarity' }).setOrigin(0.5);
-    this.healthText = this.add
-      .text(640, 200, this.gm.health.toString(), { font: '32px Clarity' })
-      .setOrigin(0.5);
+      this.add
+        .text(640, 150, 'Health:', { font: '32px Clarity' })
+        .setOrigin(0.5);
+      this.healthText = this.add
+        .text(640, 200, this.gm.health.toString(), { font: '32px Clarity' })
+        .setOrigin(0.5);
 
-    this.enterSound = this.sound.add('enter', {
-      rate: 2,
-    });
-    this.failSound = this.sound.add('fail', {
-      rate: 2,
-    });
-    this.succeedSound = this.sound.add('hit', { rate: 2 });
-
-    this.backgroundMusic =
-      this.backgroundMusic ??
-      this.sound.add('music', { loop: true, volume: 0.5 });
-
-    if (!this.backgroundMusic.isPlaying) {
-      this.backgroundMusic.play();
-    }
-
-    eventsCenter.on('presentCue', () => {
-      this.enterSound.play();
-    });
-
-    eventsCenter.on('succeed', () => {
-      this.enterSound.stop();
-      this.succeedSound.play();
-      this.scoreText.setText(this.gm.score.toString());
-      this.streakText.setText(this.gm.streak.toString());
-      // this.resultText.setText('SCORE!');
-      this.cameras.main.shake(100, 0.005);
-    });
-
-    eventsCenter.on('fail', () => {
-      this.enterSound.stop();
-      this.failSound.play();
-      this.streakText.setText(this.gm.streak.toString());
-      this.healthText.setText(this.gm.health.toString());
-      this.cameras.main.shake(100, 0.005);
-    });
-
-    eventsCenter.on('reset', () => {
-      this.resultText.setText('');
-      this.failSound.stop();
-      this.succeedSound.stop();
-    });
-
-    eventsCenter.on('gameOver', () => {
-      this.scene.start('End', {
-        score: this.gm.score,
-        longestStreak: this.gm.longestStreak,
-        totalHits: this.gm.totalHits,
+      this.enterSound = this.sound.add('enter', {
+        rate: 2,
       });
-    });
+      this.failSound = this.sound.add('fail', {
+        rate: 2,
+      });
+      this.succeedSound = this.sound.add('hit', { rate: 2 });
+
+      this.backgroundMusic =
+        this.backgroundMusic ??
+        this.sound.add('music', { loop: true, volume: 0.5 });
+
+      if (!this.backgroundMusic.isPlaying) {
+        this.backgroundMusic.play();
+      }
+
+      eventsCenter.on('presentCue', () => {
+        this.enterSound.play();
+      });
+
+      eventsCenter.on('succeed', () => {
+        this.enterSound.stop();
+        this.succeedSound.play();
+        this.scoreText.setText(this.gm.score.toString());
+        this.streakText.setText(this.gm.streak.toString());
+        // this.resultText.setText('SCORE!');
+        this.cameras.main.shake(100, 0.005);
+      });
+
+      eventsCenter.on('fail', () => {
+        this.enterSound.stop();
+        this.failSound.play();
+        this.streakText.setText(this.gm.streak.toString());
+        this.healthText.setText(this.gm.health.toString());
+        this.cameras.main.shake(100, 0.005);
+      });
+
+      eventsCenter.on('reset', () => {
+        this.resultText.setText('');
+        this.failSound.stop();
+        this.succeedSound.stop();
+      });
+
+      eventsCenter.on('gameOver', () => {
+        this.scene.start('End', {
+          score: this.gm.score,
+          longestStreak: this.gm.longestStreak,
+          totalHits: this.gm.totalHits,
+        });
+      });
+      this.set = true;
+    }
   }
 
   update(time: number, delta: number): void {
