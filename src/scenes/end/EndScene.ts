@@ -68,12 +68,14 @@ export default class End extends Scene {
       .setOrigin(0.5, 0.5)
       .setInteractive({ useHandCursor: true });
 
-    restart.setInteractive().on('pointerup', () => {
+    restart.on('pointerup', () => {
       this.scene.start('Game', { restart: true });
     });
 
     home.on('pointerup', () => {
       this.scene.start('MainMenu');
     });
+
+    this.scene.pause('Game');
   }
 }

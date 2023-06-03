@@ -41,7 +41,10 @@ export default class MainMenu extends Scene {
       .setInteractive({ useHandCursor: true });
 
     startButton.on('pointerup', () => {
-      this.scene.run('Game');
+      console.log('DING!');
+      this.scene.start('Game');
     });
+
+    this.scene.pause('End');
   }
 }
