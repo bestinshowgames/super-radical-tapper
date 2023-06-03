@@ -39,18 +39,6 @@ export default class Game extends Scene {
     );
   }
 
-  preload() {
-    this.load.spritesheet('creatures', 'assets/sprites/Creatures-no-bg.png', {
-      frameWidth: 10,
-      frameHeight: 10,
-    });
-    this.load.image('background', 'assets/sprites/SRT Background 2.png');
-    this.load.audio('enter', 'assets/sounds/Teleport.mp3');
-    this.load.audio('fail', 'assets/sounds/Starpower.mp3');
-    this.load.audio('hit', 'assets/sounds/Hit 2.mp3');
-    this.load.audio('music', 'assets/sounds/Dark Dragon.ogg');
-  }
-
   init(data: any) {
     if (data && data.restart) {
       eventsCenter.emit('restart');
@@ -143,6 +131,10 @@ export default class Game extends Scene {
         totalHits: this.gm.totalHits,
       });
     });
+    // this.set = true;
+
+    this.scene.pause('MainMenu');
+    this.scene.pause('End');
   }
 
   update(time: number, delta: number): void {

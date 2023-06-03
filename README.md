@@ -6,6 +6,7 @@
 - Srites:
   - Characters - [Bit Bonanza](https://v3x3d.itch.io/bit-bonanza) by VEXED on itch.io
   - Background - [Stonelands RPG Assets](https://chasersgaming.itch.io/rpg-assets-tile-set-stonelands-nes) by chasersgaming on itch.io
+- UI - RPG UI pack from [Kenney](https://kenney.nl)
 - Sound:
   - Effects [Retro Game Weapons Sound Effects](https://happysoulmusic.com/retro-game-weapons-sound-effects/) on Happy Soul Music
   - Background Music:
