@@ -33,7 +33,7 @@ export default class MainMenu extends Scene {
       .setOrigin(0.5);
 
     const startButton = this.add
-      .text(394, 400, 'Start', {
+      .text(394, 300, 'Start', {
         font: '32px Clarity',
         backgroundColor: 'black',
       })
@@ -41,7 +41,6 @@ export default class MainMenu extends Scene {
       .setInteractive({ useHandCursor: true });
 
     startButton.on('pointerup', () => {
-      console.log('DING!');
       this.scene.start('Game');
     });
 
