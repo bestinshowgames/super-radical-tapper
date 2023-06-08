@@ -1,0 +1,7 @@
+body {
+  margin: 0;
+}
+@font-face {
+  font-family: Clarity;
+  src: url("/assets/fonts/Clarity.ttf");
+}
