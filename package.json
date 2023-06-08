@@ -9,6 +9,7 @@
     "test": "jest",
     "test:coverage": "npm test -- --coverage",
     "build": "vite build",
+    "preview": "vite preview",
     "lint": "eslint . --ext .ts",
     "prettier-format": "prettier --config .prettierrc '**/*.ts' --write"
   },
