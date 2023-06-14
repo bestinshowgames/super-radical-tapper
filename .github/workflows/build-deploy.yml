@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   build:
-    name: deploy
+    name: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -36,7 +36,7 @@ jobs:
         run: npm run build
 
   deploy:
-    name: Deploy
+    name: deploy
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
