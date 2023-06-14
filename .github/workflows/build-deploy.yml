@@ -2,7 +2,7 @@ name: Build & Deploy
 
 on:
   push:
-    branchs:
+    branches:
       - main
 
 permissions:
@@ -16,11 +16,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-deploy:
-    name: deploy
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
+    name: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -35,6 +32,15 @@ jobs:
       - name: Build project
         run: npm run build
 
+  deploy:
+    name: deploy
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
