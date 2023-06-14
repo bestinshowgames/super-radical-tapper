@@ -40,9 +40,13 @@ export default class MainMenu extends Scene {
       .setOrigin(0.5, 0.5)
       .setInteractive({ useHandCursor: true });
 
-    startButton.on('pointerup', () => {
-      this.scene.start('Game');
-    });
+    startButton.on(
+      'pointerup',
+      () => {
+        this.scene.start('Game');
+      },
+      this
+    );
 
     this.scene.pause('End');
   }
