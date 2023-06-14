@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
 import CueConfiguration, { HEX } from './CueConfiguration';
+import eventsCenter from '../../scenes/game/EventsCenter';
+import CueFacet from '../../scenes/game/CueFacet';
+import { InputEvents } from '../../scenes/game/InputMediator';
 
 export enum CueStatus {
   REST,
@@ -141,11 +144,14 @@ export default class Cue extends Phaser.GameObjects.Container {
   }
 
   createCircle(type?: string) {
-    const circle = this.scene.add.circle(
-      this.options.x,
-      this.options.y,
-      this.options.radius
-    );
+    const circle = this.scene.add
+      .circle(this.options.x, this.options.y, this.options.radius)
+      .setInteractive()
+      .on('pointerdown', () => {
+        const cueResponse = CueFacet.getFacetForKey(this.key);
+        eventsCenter.emit('input', InputEvents.CUE_INPUT, cueResponse);
+      });
+
     switch (type) {
       case 'highlight':
         circle.setFillStyle(

@@ -1,6 +1,6 @@
 import { Scene, GameObjects, Sound } from 'phaser';
 import eventsCenter from './EventsCenter';
-import InputMediator from './InputMediator';
+import { InputEvents } from './InputMediator';
 import GameController from './GameController';
 import CueContainer from './CueContainer';
 import PhaseController from './PhaseController';
@@ -43,7 +43,6 @@ export default class Game extends Scene {
     if (data && data.restart) {
       eventsCenter.emit('restart');
     }
-    InputMediator.mediateKeyboardStream(this.input.keyboard);
   }
 
   create() {
@@ -96,6 +95,16 @@ export default class Game extends Scene {
     if (!this.backgroundMusic.isPlaying) {
       this.backgroundMusic.play();
     }
+
+    this.input.keyboard.on('keydown', (event: any) => {
+      const code: number = event.keyCode;
+      const cueResponse = CueFacet.getFacetForKey(code);
+      if (cueResponse) {
+        eventsCenter.emit('input', InputEvents.CUE_INPUT, cueResponse);
+      } else {
+        eventsCenter.emit('input', InputEvents.UNDEFINED, null);
+      }
+    });
 
     eventsCenter.on('presentCue', () => {
       this.enterSound.play();

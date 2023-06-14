@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "dev": "vite build && vite preview",
+    "dev": "vite build --watch",
+    "dev:server": "vite preview --host",
     "test": "jest",
     "test:coverage": "npm test -- --coverage",
     "build": "vite build",
