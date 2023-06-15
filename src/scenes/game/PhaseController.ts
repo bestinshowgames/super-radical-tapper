@@ -14,6 +14,10 @@ export default class PhaseController {
   private _timeInPhase: number = 0;
   private _gameOver: boolean = false;
 
+  private _startingResponseDurationMS: number = 500;
+  private _endingResponseDurationMS: number = 250;
+  private _responseDurationChange;
+
   constructor() {
     // TODO: Make this configurable/changeable
     this._phaseConfiguration = {
@@ -26,7 +30,7 @@ export default class PhaseController {
         nextPhase: GamePhase.RESPONSE_COLLECTION,
       },
       [GamePhase.RESPONSE_COLLECTION]: {
-        duration: 500,
+        duration: this._startingResponseDurationMS,
         nextPhase: GamePhase.DISPLAY_RESULTS,
       },
       [GamePhase.DISPLAY_RESULTS]: {
@@ -38,6 +42,10 @@ export default class PhaseController {
         nextPhase: GamePhase.PRESENTATION,
       },
     };
+
+    this._responseDurationChange = Math.floor(
+      (this._startingResponseDurationMS - this._endingResponseDurationMS) / 50
+    );
 
     this._currentPhase = GamePhase.START;
 
@@ -52,7 +60,21 @@ export default class PhaseController {
     });
 
     eventsCenter.on('gameOver', () => {
+      this.reset();
       this._gameOver = true;
+    });
+
+    eventsCenter.on('succeed', () => {
+      let newResponseDuration =
+        this._phaseConfiguration[GamePhase.RESPONSE_COLLECTION].duration;
+      if (newResponseDuration > this._endingResponseDurationMS) {
+        newResponseDuration -= this._responseDurationChange;
+        if (newResponseDuration < this._endingResponseDurationMS) {
+          newResponseDuration = this._endingResponseDurationMS;
+        }
+        this._phaseConfiguration[GamePhase.RESPONSE_COLLECTION].duration =
+          newResponseDuration;
+      }
     });
   }
 
@@ -110,6 +132,8 @@ export default class PhaseController {
 
   reset() {
     this._currentPhase = GamePhase.START;
+    this._phaseConfiguration[GamePhase.RESPONSE_COLLECTION].duration =
+      this._startingResponseDurationMS;
     this._timeInPhase = 0;
     this._gameOver = false;
   }
