@@ -133,17 +133,25 @@ export default class Game extends Scene {
       this.succeedSound.stop();
     });
 
-    eventsCenter.on('gameOver', () => {
-      this.scene.start('End', {
-        score: this.gm.score,
-        longestStreak: this.gm.longestStreak,
-        totalHits: this.gm.totalHits,
-      });
+    eventsCenter.on('gameOver', (win: boolean | undefined) => {
+      if (!win) {
+        this.scene.start('Lose', {
+          score: this.gm.score,
+          longestStreak: this.gm.longestStreak,
+          totalHits: this.gm.totalHits,
+        });
+      } else {
+        this.scene.start('Win', {
+          score: this.gm.score,
+          longestStreak: this.gm.longestStreak,
+          totalHits: this.gm.totalHits,
+        });
+      }
     });
     // this.set = true;
 
     this.scene.pause('MainMenu');
-    this.scene.pause('End');
+    this.scene.pause('Lose');
   }
 
   update(time: number, delta: number): void {

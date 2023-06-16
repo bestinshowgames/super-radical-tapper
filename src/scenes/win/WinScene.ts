@@ -1,16 +1,12 @@
 import { Scene } from 'phaser';
 
-export default class End extends Scene {
+export default class Win extends Scene {
   private score: number = 0;
   private longestStreak: number = 0;
   private totalHits: number = 0;
 
   constructor() {
-    super('End');
-  }
-
-  preload() {
-    this.load.image('background', 'assets/sprites/SRT Background.png');
+    super('Win');
   }
 
   init(data: any) {
@@ -31,24 +27,37 @@ export default class End extends Scene {
       .setOrigin(0.5);
 
     this.add
-      .text(384, 125, 'You Lost 💀', { font: '32px Clarity' })
+      .text(384, 125, 'You Won! ✨', { font: '32px Clarity' })
       .setOrigin(0.5);
 
     this.add
-      .text(384, 200, `Final Score: ${this.score.toString()}`, {
-        font: '32px Clarity',
+      .text(
+        384,
+        190,
+        [
+          'The radicals scurry back into the portals,',
+          'closing them in the process.',
+          "Just in time too. Your master's returning!",
+        ],
+        { font: '18px Clarity', align: 'center' }
+      )
+      .setOrigin(0.5);
+
+    this.add
+      .text(384, 275, `Final Score: ${this.score.toString()}`, {
+        font: '18px Clarity',
       })
       .setOrigin(0.5);
 
     this.add
-      .text(384, 250, `Total Hits: ${this.totalHits.toString()}`, {
-        font: '32px Clarity',
+      .text(384, 300, `Total Hits: ${this.totalHits.toString()}`, {
+        font: '18px Clarity',
       })
       .setOrigin(0.5);
 
     this.add
-      .text(384, 300, `Longest Streak: ${this.longestStreak.toString()}`, {
-        font: '32px Clarity',
+      .text(384, 325, `Longest Streak: ${this.longestStreak.toString()}`, {
+        font: '18px Clarity',
       })
       .setOrigin(0.5);
 
