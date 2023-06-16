@@ -48,7 +48,20 @@ export default class MainMenu extends Scene {
       this.scene.start('Game');
     });
 
+    const aboutButton = this.add
+      .text(394, 350, 'About', {
+        font: '32px Clarity',
+        backgroundColor: 'black',
+      })
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+
+    aboutButton.on('pointerup', () => {
+      this.scene.start('About');
+    });
+
     this.scene.pause('Lose');
     this.scene.pause('Win');
+    this.scene.pause('About');
   }
 }
