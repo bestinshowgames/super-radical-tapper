@@ -4,7 +4,7 @@ import CueGenerator from './CueGenerator';
 import PhaseController from './PhaseController';
 import { InputEvents } from './InputMediator';
 
-const STARTING_HEALTH = 3;
+const STARTING_HEALTH = 5;
 const STARTING_STREAK = 0;
 const STARTING_SCORE = 0;
 
@@ -74,7 +74,7 @@ export default class GameController {
       }
     });
 
-    eventsCenter.on('restart', () => {
+    eventsCenter.on('gameOver', () => {
       this.reset();
     });
   }

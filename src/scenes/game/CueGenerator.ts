@@ -20,7 +20,7 @@ export default class CueGenerator {
     this._structuredPresentationPhase = this.buildStructuredPresentationPhase();
     this._cueSelector = this.cueGenerator();
 
-    eventsCenter.on('restart', () => {
+    eventsCenter.on('gameOver', () => {
       this._structuredPhaseIterator = this._inStructuredPhase ? -1 : 0; // -1 is here to account for incidental increment in generator
       this._unstructuredPhaseIterator = 0;
       this._inStructuredPhase = true;
