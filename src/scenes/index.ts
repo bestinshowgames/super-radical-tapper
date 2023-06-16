@@ -1,5 +1,6 @@
 import Game from './game/GameScene';
-import End from './end/EndScene';
+import Lose from './lose/LoseScene';
+import Win from './win/WinScene';
 import MainMenu from './start/MainMenuScene';
 
-export { Game, End, MainMenu };
+export { Game, Lose, Win, MainMenu };

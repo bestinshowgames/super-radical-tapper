@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
-import { MainMenu, Game, End } from './scenes';
+import { MainMenu, Game, Lose, Win } from './scenes';
 
 export default class SceneManager {
-  public static scenes: typeof Scene[] = [MainMenu, Game, End];
+  public static scenes: typeof Scene[] = [MainMenu, Game, Lose, Win];
 }

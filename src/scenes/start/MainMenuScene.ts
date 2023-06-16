@@ -32,6 +32,10 @@ export default class MainMenu extends Scene {
       .text(384, 75, 'Super Radical Tapper!', { font: '40px Clarity' })
       .setOrigin(0.5);
 
+    this.add
+      .text(384, 150, 'Beat Back the Baddies', { font: '24px Clarity' })
+      .setOrigin(0.5);
+
     const startButton = this.add
       .text(394, 300, 'Start', {
         font: '32px Clarity',
@@ -44,6 +48,7 @@ export default class MainMenu extends Scene {
       this.scene.start('Game');
     });
 
-    this.scene.pause('End');
+    this.scene.pause('Lose');
+    this.scene.pause('Win');
   }
 }

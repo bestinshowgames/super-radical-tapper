@@ -64,6 +64,10 @@ export default class GameController {
     eventsCenter.on('succeed', () => {
       this.incrementStreak();
       this.incrementScore();
+
+      if (this._totalHits >= 500) {
+        eventsCenter.emit('gameOver', true);
+      }
     });
 
     eventsCenter.on('fail', () => {
@@ -74,9 +78,11 @@ export default class GameController {
       }
     });
 
-    eventsCenter.on('gameOver', () => {
+    eventsCenter.on('restart', () => {
       this.reset();
     });
+
+    this.reset();
   }
 
   set cueContainer(cueContainer: CueContainer) {
