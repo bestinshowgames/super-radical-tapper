@@ -90,6 +90,10 @@ export default class PhaseController {
     return this._currentPhase;
   }
 
+  get maximumResponseDuration(): number {
+    return this._startingResponseDurationMS;
+  }
+
   set currentPhase(newPhase: GamePhase) {
     this._currentPhase = newPhase;
   }

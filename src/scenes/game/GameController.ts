@@ -119,7 +119,6 @@ export default class GameController {
     const reactionTime = this._phaseController.timeInPhase; // This works because event processing is synchronous, and endPhase() is called after results are calculated
     const reactionTimeScore = this.calculateRTScore(reactionTime);
     this._score += reactionTimeScore;
-    // this._score += 10 * this.streak;
   }
 
   incrementStreak(): void {
@@ -143,9 +142,7 @@ export default class GameController {
   }
 
   calculateRTScore(rt: number): number {
-    const maxDuration = this._phaseController.phaseDuration(
-      GamePhase.RESPONSE_COLLECTION
-    );
+    const maxDuration = this._phaseController.maximumResponseDuration;
 
     // decreasing the denominator increases the sensetivity, i.e. number of points that can be alloted based on RT
     // using ceil to prevent 0 pt allotment if user responded with < denom remaining
