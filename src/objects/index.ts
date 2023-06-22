@@ -1,5 +1,4 @@
-import Cue, { CueStatus } from './Cue/Cue';
-import CueConfiguration, { HEX } from './Cue/CueConfiguration';
+import Background from './Background';
+import Title from './Title';
 
-export { Cue, CueStatus };
-export type { CueConfiguration, HEX };
+export { Background, Title };

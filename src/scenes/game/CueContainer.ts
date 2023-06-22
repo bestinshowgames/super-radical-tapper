@@ -1,6 +1,6 @@
 import { GameObjects, Scene } from 'phaser';
 import eventsCenter from './EventsCenter';
-import { Cue } from '../../objects';
+import Cue from './Cue';
 import CueFacet from './CueFacet';
 
 export default class CueContainer extends GameObjects.Container {
@@ -16,7 +16,6 @@ export default class CueContainer extends GameObjects.Container {
       id: CueFacet.CUE_FACETS[0].id,
       x: 153,
       y: 330,
-      radius: 50,
       text: 'D',
       key: CueFacet.CUE_FACETS[0].key,
       eventEmitter: eventsCenter,
@@ -26,7 +25,6 @@ export default class CueContainer extends GameObjects.Container {
       id: CueFacet.CUE_FACETS[1].id,
       x: 307,
       y: 330,
-      radius: 50,
       text: 'F',
       key: CueFacet.CUE_FACETS[1].key,
       eventEmitter: eventsCenter,
@@ -36,7 +34,6 @@ export default class CueContainer extends GameObjects.Container {
       id: CueFacet.CUE_FACETS[2].id,
       x: 461,
       y: 330,
-      radius: 50,
       text: 'J',
       key: CueFacet.CUE_FACETS[2].key,
       eventEmitter: eventsCenter,
@@ -46,7 +43,6 @@ export default class CueContainer extends GameObjects.Container {
       id: CueFacet.CUE_FACETS[3].id,
       x: 614,
       y: 330,
-      radius: 50,
       text: 'K',
       key: CueFacet.CUE_FACETS[3].key,
       eventEmitter: eventsCenter,

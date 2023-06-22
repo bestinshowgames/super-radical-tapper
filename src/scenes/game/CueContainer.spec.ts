@@ -25,13 +25,13 @@ jest.mock('phaser', () => ({
   },
 }));
 
-jest.mock('../../objects', () => ({
-  Cue: jest.fn().mockImplementation((_scene, options) => ({
-    id: options.id,
-    key: options.key,
-    highlight: jest.fn(),
-  })),
-}));
+jest.mock('./Cue', () => {
+  return function (this: any, _scene: any, options: any) {
+    this.id = options.id;
+    this.key = options.key;
+    this.highlight = jest.fn();
+  };
+});
 
 const mockScene = new Scene({});
 

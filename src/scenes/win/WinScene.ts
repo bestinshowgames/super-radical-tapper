@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import { Background, Title } from '../../objects';
 
 export default class Win extends Scene {
   private score: number = 0;
@@ -16,15 +17,8 @@ export default class Win extends Scene {
   }
 
   create() {
-    const { width, height } = this.sys.game.config;
-    this.add
-      .image(width / 2, height / 2, 'background')
-      .setScale(2, 2)
-      .setOrigin(0.5);
-
-    this.add
-      .text(384, 50, 'Super Radical Tapper!', { font: '40px Clarity' })
-      .setOrigin(0.5);
+    this.add.existing(new Background(this));
+    this.add.existing(new Title(this));
 
     this.add
       .text(384, 125, 'You Won! ✨', { font: '32px Clarity' })

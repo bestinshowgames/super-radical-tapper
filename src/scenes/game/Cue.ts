@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 import CueConfiguration, { HEX } from './CueConfiguration';
-import eventsCenter from '../../scenes/game/EventsCenter';
-import CueFacet from '../../scenes/game/CueFacet';
-import { InputEvents } from '../../scenes/game/InputMediator';
+import eventsCenter from './EventsCenter';
+import CueFacet from './CueFacet';
+import { InputEvents } from './InputMediator';
 
 export enum CueStatus {
   REST,

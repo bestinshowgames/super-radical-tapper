@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import PhaserConfig from './PhaserConfig';
-import SceneManager from './SceneManager';
+import { MainMenu, Game, Lose, About, Credits, Win } from './scenes';
 
 new Phaser.Game(
   Object.assign(PhaserConfig, {
-    scene: SceneManager.scenes,
+    scene: [MainMenu, Game, Lose, Win, About, Credits],
   })
 );

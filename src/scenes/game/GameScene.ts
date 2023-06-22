@@ -6,6 +6,7 @@ import CueContainer from './CueContainer';
 import PhaseController from './PhaseController';
 import CueGenerator from './CueGenerator';
 import CueFacet from './CueFacet';
+import { Background, Title } from '../../objects';
 
 export default class Game extends Scene {
   private resultText!: GameObjects.Text;
@@ -46,19 +47,10 @@ export default class Game extends Scene {
   }
 
   create() {
-    let { width, height } = this.sys.game.config;
-    // Force conversion to int just to keep the parser happy
-    width = +width;
-    height = +height;
-    this.add
-      .image(width / 2, height / 2, 'background')
-      .setScale(2, 2)
-      .setOrigin(0.5);
-    this.gm.cueContainer = new CueContainer(this);
+    this.add.existing(new Background(this));
 
-    this.add
-      .text(384, 75, 'Super Radical Tapper!', { font: '40px Clarity' })
-      .setOrigin(0.5);
+    this.gm.cueContainer = new CueContainer(this);
+    this.add.existing(new Title(this));
 
     this.resultText = this.add
       .text(384, 250, '', { font: '32px Clarity' })

@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import { Background, Title } from '../../objects';
 
 export default class Credits extends Scene {
   constructor() {
@@ -6,18 +7,8 @@ export default class Credits extends Scene {
   }
 
   create() {
-    let { width, height } = this.sys.game.config;
-    // Force conversion to int just to keep the parser happy
-    width = +width;
-    height = +height;
-    this.add
-      .image(width / 2, height / 2, 'background')
-      .setScale(2, 2)
-      .setOrigin(0.5);
-
-    this.add
-      .text(384, 75, 'Super Radical Tapper!', { font: '40px Clarity' })
-      .setOrigin(0.5);
+    this.add.existing(new Background(this));
+    this.add.existing(new Title(this));
 
     this.add
       .text(
@@ -48,5 +39,7 @@ export default class Credits extends Scene {
     back.on('pointerup', () => {
       this.scene.start('About');
     });
+
+    this.scene.pause('About');
   }
 }
