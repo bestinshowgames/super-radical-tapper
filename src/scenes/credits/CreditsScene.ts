@@ -22,15 +22,16 @@ export default class Credits extends Scene {
     this.add
       .text(
         384,
-        250,
+        260,
         [
-          'Lead Programmer: the-camputer (https://github.com/the-camputer)\n',
-          'Lead Game Designer: Huzeather\n',
-          'Font: Clarity by Gossamore (https://gossamore.itch.io/clarity)\n',
-          'Character Sprites: Bit Bonanza by VEXED (https://v3x3d.itch.io/bit-bonanza)\n',
-          'Background: Stonelands RPG Assets by chasersgaming\n(https://chasersgaming.itch.io/rpg-assets-tile-set-stonelands-nes)\n',
-          'background Music: Dark Dragon by Fatal Exit\n(https://fatalexit.itch.io/dark-dragon-royalty-free-cca-chiptune-music-for-games)\n',
-          'Sound Effects: Retro Game Weapons Sound Effects on Happy Soul Music\n(https://happysoulmusic.com/retro-game-weapons-sound-effects/)',
+          '* Lead Programmer: the-camputer (https://github.com/the-camputer)\n',
+          '* Lead Game Designer: Huzeather\n',
+          '* Font: Clarity by Gossamore (https://gossamore.itch.io/clarity)\n',
+          '* Character Sprites: Bit Bonanza by VEXED (https://v3x3d.itch.io/bit-bonanza)\n',
+          '* Portal Sprites: 2D Asset Portal Pack by PixelZoink & actuallyKron\n(https://actuallykron.itch.io/32x32-2d-portal-asset-pack)\n',
+          '* Background: Stonelands RPG Assets by chasersgaming\n(https://chasersgaming.itch.io/rpg-assets-tile-set-stonelands-nes)\n',
+          '* Background Music: Dark Dragon by Fatal Exit\n(https://fatalexit.itch.io/dark-dragon-royalty-free-cca-chiptune-music-for-games)\n',
+          '* Sound Effects: Retro Game Weapons Sound Effects on Happy Soul Music\n(https://happysoulmusic.com/retro-game-weapons-sound-effects/)\n',
         ],
         { font: '12px Clarity', align: 'center', backgroundColor: 'gray' }
       )

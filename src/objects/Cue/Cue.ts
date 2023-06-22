@@ -18,14 +18,10 @@ export default class Cue extends Phaser.GameObjects.Container {
   _key: number;
   private _status: CueStatus = CueStatus.REST;
 
-  baseCircle: Phaser.GameObjects.Arc;
-  defaultBaseColor: HEX = '#FF43C2';
-  highlightedCircle: Phaser.GameObjects.Arc;
-  defaultHighlightedColor: HEX = '#F8FF43';
-  succeededCircle: Phaser.GameObjects.Arc;
-  defaultSuccessColor: HEX = '#43FF63';
-  failedCircle: Phaser.GameObjects.Arc;
-  defaultFailureColor: HEX = '#FF4343';
+  baseCircle: Phaser.GameObjects.Sprite;
+  highlightedCircle: Phaser.GameObjects.Sprite;
+  succeededCircle: Phaser.GameObjects.Sprite;
+  failedCircle: Phaser.GameObjects.Sprite;
   edgar: Phaser.GameObjects.Image;
   radical: Phaser.GameObjects.Image;
   cueText?: Phaser.GameObjects.Text;
@@ -38,16 +34,16 @@ export default class Cue extends Phaser.GameObjects.Container {
     this._key = options.key;
     const { x, y } = options;
 
-    this.baseCircle = this.createCircle();
+    this.baseCircle = this.createCircle(1);
     this.scene.add.existing(this.baseCircle);
 
-    this.highlightedCircle = this.createCircle('highlight');
+    this.highlightedCircle = this.createCircle(3);
     this.scene.add.existing(this.highlightedCircle);
 
-    this.succeededCircle = this.createCircle('success');
+    this.succeededCircle = this.createCircle(4);
     this.scene.add.existing(this.succeededCircle);
 
-    this.failedCircle = this.createCircle('failure');
+    this.failedCircle = this.createCircle(2);
     this.scene.add.existing(this.failedCircle);
 
     this.edgar = this.scene.add
@@ -57,7 +53,7 @@ export default class Cue extends Phaser.GameObjects.Container {
     this.radical = this.scene.add
       .image(this.options.x, this.options.y, 'creatures', 38)
       .setScale(4, 4)
-      .setTint(0x43ff63, 0x00ff00, 0x00ff00, 0x43ff63)
+      .setTint(0x0a1ab1, 0x0a1ab1, 0x0a1ab1, 0x0a1ab1)
       .setActive(false);
 
     if (options.text) {
@@ -143,44 +139,16 @@ export default class Cue extends Phaser.GameObjects.Container {
     this.cueText?.setVisible(true);
   }
 
-  createCircle(type?: string) {
+  createCircle(type: number) {
     const circle = this.scene.add
-      .circle(this.options.x, this.options.y, this.options.radius)
+      .sprite(this.options.x, this.options.y, 'portals', type)
+      .setScale(3, 3)
+      .setOrigin(0.5)
       .setInteractive()
       .on('pointerdown', () => {
         const cueResponse = CueFacet.getFacetForKey(this.key);
         eventsCenter.emit('input', InputEvents.CUE_INPUT, cueResponse);
       });
-
-    switch (type) {
-      case 'highlight':
-        circle.setFillStyle(
-          this.convertHEXToNumber(
-            this.options.highlightColor ?? this.defaultHighlightedColor
-          )
-        );
-        break;
-      case 'success':
-        circle.setFillStyle(
-          this.convertHEXToNumber(
-            this.options.successColor ?? this.defaultSuccessColor
-          )
-        );
-        break;
-      case 'failure':
-        circle.setFillStyle(
-          this.convertHEXToNumber(
-            this.options.failureColor ?? this.defaultFailureColor
-          )
-        );
-        break;
-      default:
-        circle.setFillStyle(
-          this.convertHEXToNumber(
-            this.options.baseColor ?? this.defaultBaseColor
-          )
-        );
-    }
     return circle;
   }
 }

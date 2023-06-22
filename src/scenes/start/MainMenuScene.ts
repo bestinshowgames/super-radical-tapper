@@ -16,6 +16,10 @@ export default class MainMenu extends Scene {
     this.load.audio('music', 'assets/sounds/Dark Dragon.ogg');
     this.load.image('background', 'assets/sprites/SRT Background 2.png');
     this.load.image('basicButton', 'assets/sprites/buttonLong_beige.png');
+    this.load.spritesheet('portals', 'assets/sprites/portal3_spritesheet.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
   }
 
   create() {

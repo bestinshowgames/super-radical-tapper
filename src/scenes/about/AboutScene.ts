@@ -22,16 +22,18 @@ export default class About extends Scene {
     this.add
       .text(
         384,
-        200,
+        250,
         [
-          'Meet Edgar, the cheeky familiar of',
+          '\nMeet Edgar, the cheeky familiar of',
           'the renown wizard Trizolam.\n',
           'One day, left to his own devices in the summoning chamber,',
           "Edgar knocks several of his master's bottled portals off of a desk.",
           'Holes to another dimension burst open, and tiny fae known as radicals',
           'to come pouring through.\n',
           'Help Edgar beat back the radical horde and close the portals',
-          'before his master returns!',
+          'before his master returns!\n',
+          'When a portal flashes, press the corresponding key before time runs out.',
+          'Mess up and a radical will slip through and attack!\n',
         ],
         { font: '12px Clarity', align: 'center', backgroundColor: 'gray' }
       )
